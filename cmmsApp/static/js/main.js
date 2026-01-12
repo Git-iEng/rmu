@@ -151,7 +151,7 @@ function smoothScrollTo(targetSelector) {
       track.style.transform = `translateX(${-active * pageWidth()}px)`;
     }
   });
-  ro.observe(wwrap = wrap); // observe container width changes
+  ro.observe(wrap); // observe container width changes
 
   // Also pause marquee on hover (optional, keeps prior UX)
   wrap.addEventListener('mouseenter', () => {
@@ -227,7 +227,7 @@ function smoothScrollTo(targetSelector) {
   function setState(expanded) {
     grid.classList.toggle('is-collapsed-solar-system-solution', !expanded);
     btn.setAttribute('aria-expanded', String(expanded));
-    btn.textContent = expanded ? 'View Fewer' : 'View LV Switchboards ';
+    btn.textContent = expanded ? 'View Fewer' : 'View Ring Main Unit';
 
     // Nudge IntersectionObserver so reveal animations can trigger for newly shown cards
     window.requestAnimationFrame(() => {
@@ -800,219 +800,212 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- DETAILS CONTENT MAP ---
   const detailsMap = {
     msb: {
-      title: 'Main Switchboards Manufactured to Australian AS61439 Standard',
-      body: `
-        <p><strong>At iEngineering Australia</strong>, we take pride in offering high-quality main switchboards designed and manufactured in compliance with the Australian <strong>AS61439</strong> standard. This ensures the highest levels of safety, reliability, and performance for your power distribution needs.</p>
+  title: "ACB (Air Circuit Breaker) RMU",
+  body: `
+    <p>ACB-based Ring Main Units use Air Circuit Breakers for protection and control of medium-voltage feeders and transformers. They are suited to installations where robust switching performance and higher current capability are required.</p>
 
-        <h4>Why Choose AS61439-Compliant Main Switchboards?</h4>
-        <ul>
-          <li><strong>Enhanced Safety:</strong> Protection for both operators and equipment.</li>
-          <li><strong>Reliability:</strong> Consistent performance even under demanding conditions.</li>
-          <li><strong>Adaptability:</strong> Tailored solutions to meet diverse requirements.</li>
-        </ul>
-
-        <h4>Customization Options to Suit Your Needs</h4>
-        <p>Every project is unique. We offer tailored solutions using high-quality components from leading global brands:</p>
-        <ul>
-          <li><strong>ABB:</strong> Innovative and reliable solutions.</li>
-          <li><strong>Schneider Electric:</strong> Energy-efficient and smart technologies.</li>
-          <li><strong>Rittal:</strong> Robust and versatile enclosure systems.</li>
-          <li><strong>L&K:</strong> Custom-built boards to match specific project requirements.</li>
-        </ul>
-        <p>Our team works closely with you to design and manufacture main switchboards that precisely match your specifications, ensuring seamless integration with your electrical systems.</p>
-
-        <h4>Applications</h4>
-        <ul>
-          <li>Commercial buildings</li>
-          <li>Industrial facilities</li>
-          <li>Infrastructure projects</li>
-          <li>Renewable energy systems</li>
-        </ul>
-      `,
-      image: {src: '../static/images/solutions/msb.avif', alt: 'AS61439 main switchboard' }
-    },
-    mdp: {
-      title: "Main Distribution Panel (MDP) – AS61439 Compliant",
-      body: `
-    <h4>Introduction</h4>
-    <p>Welcome to iEngineering's Main Distribution Panel (MDP) solutions – the backbone of efficient electrical distribution systems. Our MDPs are engineered for high performance, safety, and durability, providing reliable power management for commercial, industrial, and residential applications. With advanced technology, precision engineering, and industry-leading design, iEngineering MDPs ensure seamless distribution, maximum uptime, and superior operational efficiency.</p>
-
-    <h4>What is a Main Distribution Panel (MDP)?</h4>
-    <p>A Main Distribution Panel is a critical component in electrical systems, acting as the primary control point for distributing electricity throughout a building or facility. It receives power from the source and distributes it to various sub-circuits, ensuring stable and efficient operation of electrical equipment. Our MDPs are designed to handle high loads, ensure safety through circuit protection, and facilitate easy maintenance and upgrades.</p>
-
-    <h4>Key Features of iEngineering MDP</h4>
+    <h4>What it is</h4>
     <ul class="svc-detail-list">
-      <li>Reliable Power Distribution</li>
-      <li>Enhanced Safety</li>
-      <li>Customization Options</li>
-      <li>High Durability</li>
-      <li>Compact and Efficient Design</li>
-      <li>Future-Proof Technology</li>
+      <li><strong>Protection & control:</strong> Used to switch and protect MV feeders and transformer circuits.</li>
+      <li><strong>Fault handling:</strong> Supports protection schemes for overcurrent, short circuit, and earth fault (with relay integration as required).</li>
+      <li><strong>Duty:</strong> Preferred where higher current duty and demanding operating conditions exist.</li>
     </ul>
 
-    <h4>Applications</h4>
+    <h4>Key benefits</h4>
     <ul class="svc-detail-list">
-      <li>Commercial Buildings</li>
-      <li>Industrial Facilities</li>
-      <li>Data Centers</li>
-      <li>Hospitals and Healthcare Facilities</li>
-      <li>Residential Complexes</li>
-      <li>Infrastructure Projects</li>
+      <li>Reliable switching and protection performance</li>
+      <li>Strong mechanical endurance for frequent operations</li>
+      <li>Service-friendly design for maintenance and inspection</li>
+      <li>Suitable for industrial and commercial MV distribution</li>
+    </ul>
+
+    <h4>Typical applications</h4>
+    <ul class="svc-detail-list">
+      <li>Industrial plants and processing facilities</li>
+      <li>Commercial precinct substations</li>
+      <li>Transformer protection and feeder sectionalising</li>
+      <li>Sites with higher current MV distribution requirements</li>
     </ul>
   `,
-      // one image only – set the correct path/filename you have in your project
-      image: { src: "../static/images/solutions/mdp.avif", alt: "iEngineering Main Distribution Panel (MDP)" }
-    },
-    mcc: {
-      title: "Motor Control Centres (MCC)",
-      body: `
-    <p>Motor Control Centre (MCC) panels are essential components in industrial and commercial electrical systems. Designed to centralize and manage the control of motors and other connected electrical devices, MCC panels offer efficiency, safety, and reliability.</p>
+  image: { src: "../static/images/projects/4.avif", alt: "ACB (Air Circuit Breaker) RMU" }
+},
 
-    <h4>What Are MCC Panels?</h4>
-    <p>MCC panels are assemblies of one or more enclosed sections housing motor control units. They are commonly used to control electric motors in factories, buildings, and industrial plants. The panels integrate various control mechanisms like switches, circuit breakers, fuses, and overload relays to ensure smooth and secure motor operations.</p>
+mdp: {
+  title: "VCB (Vacuum Circuit Breaker) RMU",
+  body: `
+    <p>VCB-based RMUs extinguish arcs inside a sealed vacuum interrupter, providing fast fault interruption, high reliability, and minimal maintenance. They are widely used in compact MV distribution networks where uptime and safety are critical.</p>
 
-    <h4>Benefits of Using MCC Panels</h4>
+    <h4>What it is</h4>
     <ul class="svc-detail-list">
-      <li><strong>Centralized Control:</strong> Efficiently manage multiple motors from a single location.</li>
-      <li><strong>Enhanced Protection:</strong> Safeguards against overloads, short circuits, and phase failures.</li>
-      <li><strong>Energy Efficiency:</strong> Optimizes motor performance to reduce energy consumption.</li>
-      <li><strong>Improved Productivity:</strong> Ensures reliable motor operation, minimizing disruptions.</li>
+      <li><strong>Vacuum interruption:</strong> Arc quenching occurs inside a vacuum bottle, reducing wear and maintenance.</li>
+      <li><strong>High reliability:</strong> Suitable for frequent switching operations and long service life.</li>
+      <li><strong>Compact solution:</strong> Ideal for space-limited installations such as urban kiosks and underground networks.</li>
     </ul>
 
-    <h4>Applications</h4>
+    <h4>Key benefits</h4>
     <ul class="svc-detail-list">
-      <li>Manufacturing Plants</li>
-      <li>Power Generation Facilities</li>
-      <li>Water Treatment Plants</li>
-      <li>HVAC Systems</li>
-      <li>Oil and Gas Refineries</li>
-      <li>Commercial Buildings</li>
+      <li>Fast fault clearance and consistent switching performance</li>
+      <li>Low maintenance compared to many traditional interrupter types</li>
+      <li>Excellent operational life for frequent switching duty</li>
+      <li>Strong suitability for critical uptime environments</li>
     </ul>
-  `
-    ,
-    // one image only – set the correct path/filename you have in your project
-      image: { src: "../static/images/solutions/mcc.avif", alt: "iEngineering Main Distribution Panel (MDP)" }
-    },
+
+    <h4>Typical applications</h4>
+    <ul class="svc-detail-list">
+      <li>Urban distribution and embedded networks</li>
+      <li>Underground distribution networks</li>
+      <li>Commercial and infrastructure substations</li>
+      <li>Industrial sites requiring high reliability switching</li>
+    </ul>
+  `,
+  image: { src: "../static/images/projects/5.avif", alt: "VCB (Vacuum Circuit Breaker) RMU" }
+},
+
+mcc: {
+  title: "SF6 Circuit Breaker RMU",
+  body: `
+    <p>SF6 RMUs use sulfur hexafluoride gas as the interrupting medium, delivering high dielectric strength, compact construction, and strong arc-quenching capability. They are commonly selected for MV networks where higher fault levels must be managed in confined spaces.</p>
+
+    <h4>What it is</h4>
+    <ul class="svc-detail-list">
+      <li><strong>High insulation strength:</strong> SF6 provides excellent dielectric performance enabling compact designs.</li>
+      <li><strong>Arc interruption:</strong> Proven technology for MV switching and protection duties.</li>
+      <li><strong>Compact footprint:</strong> Well suited for kiosks and installations with limited space.</li>
+    </ul>
+
+    <h4>Key benefits</h4>
+    <ul class="svc-detail-list">
+      <li>Compact design suitable for space-constrained substations</li>
+      <li>Excellent interruption and insulation performance</li>
+      <li>Strong suitability for higher fault level environments</li>
+      <li>Reliable operation for utility and industrial MV distribution</li>
+    </ul>
+
+    <h4>Typical applications</h4>
+    <ul class="svc-detail-list">
+      <li>Compact secondary substations and RMU kiosks</li>
+      <li>Urban networks with limited footprint requirements</li>
+      <li>Industrial distribution with higher fault levels</li>
+      <li>Commercial precincts and infrastructure installations</li>
+    </ul>
+  `,
+  image: { src: "../static/images/projects/3.avif", alt: "SF6 Circuit Breaker RMU" }
+},
     plc: {
-  title: "PLC Control Panels",
+  title: "Load Break Switch (LBS) RMU",
   body: `
-    <p>At iEngineering, we specialize in designing, manufacturing, and delivering high-quality Programmable Logic Controller (PLC) control panels tailored to meet the unique needs of your industry. With years of experience and cutting-edge technology, we empower businesses with efficient and reliable automation solutions.</p>
+    <p>Load Break Switch (LBS) Ring Main Units are designed for switching and isolating medium-voltage feeders under normal load conditions. They are a cost-effective solution for distribution networks where full circuit-breaker duty is not required on every way.</p>
 
-    <h4>Features of Our PLC Control Panels</h4>
+    <h4>What it does</h4>
     <ul class="svc-detail-list">
-      <li><strong>Customizable Design:</strong> Tailored layouts and configurations to suit your specific process requirements.</li>
-      <li><strong>Advanced Connectivity:</strong> Integration with SCADA, HMI, and other industrial systems for seamless communication.</li>
-      <li><strong>Enhanced Safety:</strong> Built-in safety features to ensure reliable and secure operation.</li>
-      <li><strong>Energy Efficiency:</strong> Optimized for power-saving performance to reduce operational costs.</li>
-      <li><strong>Durability:</strong> Engineered for long-term reliability, even in harsh industrial environments.</li>
+      <li><strong>Switching under load:</strong> Safely opens/closes circuits during normal operating conditions.</li>
+      <li><strong>Isolation:</strong> Provides visible/secure isolation points for maintenance activities (as per RMU design).</li>
+      <li><strong>Protection approach:</strong> Commonly paired with <strong>HRC fuses</strong> or upstream protection for fault clearing on transformer tee-offs.</li>
     </ul>
 
-    <h4>Applications</h4>
+    <h4>Key benefits</h4>
     <ul class="svc-detail-list">
-      <li>Manufacturing</li>
-      <li>Oil and Gas</li>
-      <li>Water Treatment</li>
-      <li>Power Generation</li>
-      <li>Automotive</li>
-      <li>Food and Beverage</li>
-      <li>Pharmaceuticals</li>
+      <li>Economical and simple RMU configuration</li>
+      <li>Compact footprint suitable for kiosk substations</li>
+      <li>Reliable operation for rural and low-demand networks</li>
+      <li>Ideal for ring feeders with transformer spurs</li>
     </ul>
 
-    <h4>Our Process</h4>
+    <h4>Typical applications</h4>
     <ul class="svc-detail-list">
-      <li><strong>Consultation:</strong> Understanding your specific needs and challenges.</li>
-      <li><strong>Design:</strong> Developing a tailored solution with detailed schematics.</li>
-      <li><strong>Manufacturing:</strong> Assembling panels using high-quality materials and components.</li>
-      <li><strong>Testing:</strong> Rigorous testing to ensure reliability and compliance with industry standards.</li>
-      <li><strong>Installation & Commissioning:</strong> Seamless integration and operational setup.</li>
-      <li><strong>Support & Maintenance:</strong> Ongoing assistance to maximize uptime and efficiency.</li>
+      <li>Rural distribution networks</li>
+      <li>Commercial sites with moderate MV loads</li>
+      <li>Compact secondary substations and kiosks</li>
+      <li>Transformer protection using switch-fuse combinations</li>
     </ul>
   `,
-  // optional image; set to your real asset path or remove the image field
-  image: { src: "../static/images/solutions/plc.avif", alt: "iEngineering PLC Control Panels" }
+  image: { src: "../static/images/projects/10.avif", alt: "Load Break Switch (LBS) RMU" }
 },
+
 pcc: {
-  title: "Power Control Centre (PCC) Panels",
+  title: "Combined Type RMU (ACB / VCB / SF6)",
   body: `
-    <p>At iEngineering, we specialize in delivering high-quality Power Control Centre (PCC) panels designed to meet the diverse energy management needs of modern industries. Our PCC panels are the backbone of power distribution systems, ensuring efficient and safe operation of electrical networks across various sectors.</p>
+    <p>Combined Type RMUs integrate multiple switching and interruption technologies within one lineup. This allows different ways (ring feeders, transformer tee-offs, incomers) to be configured with the most suitable device for their duty and criticality.</p>
 
-    <h4>What Are PCC Panels?</h4>
-    <p>PCC panels are an integral part of any electrical system, used for controlling and distributing power from the main source to multiple circuits and equipment. These panels are built to handle high-capacity power and are critical for maintaining stability, reliability, and safety in large-scale power distribution networks.</p>
-
-    <h4>Applications</h4>
+    <h4>What makes it “combined”</h4>
     <ul class="svc-detail-list">
-      <li>Power Generation Plants</li>
-      <li>Manufacturing Units</li>
-      <li>Oil and Gas Facilities</li>
-      <li>Commercial Complexes</li>
-      <li>Data Centers</li>
-      <li>Renewable Energy Systems</li>
+      <li>Mix of <strong>circuit breakers</strong> (VCB/SF6/other) and <strong>load break switches</strong> within the same RMU lineup</li>
+      <li>Different protection levels per feeder (ring feeder vs transformer way)</li>
+      <li>Flexible arrangement for expansion and future feeders</li>
+    </ul>
+
+    <h4>Key benefits</h4>
+    <ul class="svc-detail-list">
+      <li>Optimized protection strategy per feeder duty</li>
+      <li>Supports ring feeder continuity with sectionalising options</li>
+      <li>Compact and modular for kiosk/secondary substations</li>
+      <li>Scalable for future transformer or feeder additions</li>
+    </ul>
+
+    <h4>Typical applications</h4>
+    <ul class="svc-detail-list">
+      <li>Industrial sites with mixed feeder requirements</li>
+      <li>Commercial precincts needing high uptime ring supply</li>
+      <li>Secondary substations with multiple outgoing feeders</li>
+      <li>Utilities and embedded networks</li>
     </ul>
   `,
-  // optional image: update path/name or remove this field if you don't want an image
-  image: { src: "../static/images/solutions/pcc.avif", alt: "iEngineering Power Control Centre (PCC) panel" }
+  image: { src: "../static/images/projects/11.avif", alt: "Combined Type RMU" }
 },
+
 pdb: {
-  title: "Power Distribution Boards (PDBs)",
+  title: "RMU Components & Accessories",
   body: `
-    <h4>Powering Progress with Precision and Reliability</h4>
-    <p>At iEngineering, we are committed to delivering state-of-the-art power distribution solutions tailored to meet the diverse needs of industries and businesses worldwide. Our Power Distribution Boards (PDBs) are designed to ensure safe, reliable, and efficient distribution of electrical power, enabling seamless operations for your projects.</p>
+    <p>RMU packages can be supplied with the key components and accessories required for safe MV switching, protection, indication, and cable termination. These options are selected based on network requirements, protection philosophy, and utility standards.</p>
 
-    <h4>Our Expertise</h4>
-    <p>With years of experience in engineering and technology, we take pride in designing and manufacturing high-quality PDBs that conform to global safety and performance standards. From small-scale setups to large industrial infrastructures, our solutions are customized to provide the perfect balance of functionality and durability.</p>
-
-    <h4>Key Features of iEngineering Power Distribution Boards</h4>
+    <h4>Typical components</h4>
     <ul class="svc-detail-list">
-      <li><strong>High Efficiency:</strong> Engineered to minimize energy loss while maximizing power delivery.</li>
-      <li><strong>Safety First:</strong> Advanced protective features against faults, overloads, and short circuits.</li>
-      <li><strong>Customizable Designs:</strong> Tailored to your exact operational requirements and environments.</li>
-      <li><strong>Robust Build:</strong> Premium materials for long-term reliability in demanding conditions.</li>
-      <li><strong>Smart Monitoring:</strong> Optional IoT-enabled monitoring for real-time insights.</li>
+      <li><strong>Switching devices:</strong> Load break switches, vacuum/SF6 circuit breakers</li>
+      <li><strong>Protection:</strong> Relays (where applicable), trip coils, interlocks, auxiliary contacts</li>
+      <li><strong>Indication:</strong> Fault passage indicators (FPI), VPIS/voltage presence indicators</li>
+      <li><strong>Metering interfaces:</strong> CTs/VTs as required, test blocks and wiring accessories</li>
+      <li><strong>Transformer protection:</strong> Switch-fuse combinations, HRC fuse links</li>
+      <li><strong>Busbar system:</strong> Solid insulated or gas/air insulated arrangements (model dependent)</li>
     </ul>
 
-    <h4>Applications</h4>
+    <h4>Cable termination & interfaces</h4>
     <ul class="svc-detail-list">
-      <li>Commercial Buildings</li>
-      <li>Industrial Plants</li>
-      <li>Renewable Energy Projects</li>
-      <li>Data Centers</li>
-      <li>Telecommunications Infrastructure</li>
+      <li>Separable connectors (elbow / T-body), termination kits and glands</li>
+      <li>MV cables and accessory kits supplied as a complete package (if required)</li>
+      <li>Earthing switch provisions and earthing accessories</li>
     </ul>
   `,
-  // optional: keep or remove this if you don't want an image
-  image: { src: "../static/images/solutions/pdb.avif", alt: "iEngineering Power Distribution Board (PDB)" }
+  image: { src: "../static/images/projects/12.avif", alt: "RMU Components and Accessories" }
 },
-metering: {
-  title: "iEngineering Metering Panels",
-  body: `
-    <h4>Overview</h4>
-    <p>iEngineering provides state-of-the-art metering panels designed for industrial and commercial applications. Our panels are engineered with precision and durability, offering seamless integration with various electrical systems. Whether you're looking for accurate energy monitoring, advanced control capabilities, or reliable protection, iEngineering metering panels are your trusted solution for ensuring optimal performance and compliance.</p>
 
-    <h4>Key Features of iEngineering Metering Panels</h4>
+metering: {
+  title: "Export-Ready RMUs for the Pacific Region",
+  body: `
+    <p>We supply export-ready Ring Main Units suitable for MV distribution applications across the Pacific region. These RMUs support compact secondary substations, transformer protection, and multiple feeder arrangements for utility, industrial, and commercial customers.</p>
+
+    <h4>Where RMUs are used</h4>
     <ul class="svc-detail-list">
-      <li><strong>Accurate Energy Monitoring</strong></li>
-      <li><strong>Advanced Control Options</strong></li>
-      <li><strong>Reliable Protection</strong></li>
-      <li><strong>Customization</strong></li>
-      <li><strong>Easy Integration</strong></li>
-      <li><strong>Durability</strong></li>
+      <li>Compact secondary substations and kiosk substations</li>
+      <li>Ring feeder networks requiring sectionalising and continuity of supply</li>
+      <li>Transformer protection and embedded networks</li>
+      <li>Industrial facilities, airports, ports, water and utilities</li>
     </ul>
 
-    <h4>Applications</h4>
+    <h4>Typical scope we can supply</h4>
     <ul class="svc-detail-list">
-      <li>Commercial Buildings</li>
-      <li>Industrial Plants</li>
-      <li>Data Centers</li>
-      <li>Renewable Energy Systems</li>
+      <li>Fully assembled RMU lineup (2–6 way typical, project dependent)</li>
+      <li>Switching options: LBS / VCB / SF6 (as per required duty)</li>
+      <li>Accessories: terminations, interlocks, indication, and documentation pack</li>
+      <li>Project packaging for shipping and installation readiness</li>
+    </ul>
+
+    <h4>Common voltage range</h4>
+    <ul class="svc-detail-list">
+      <li><strong>7.2 kV to 36 kV</strong> (project dependent)</li>
     </ul>
   `,
-  // one image (optional) — set to your real asset path or remove this field
-  image: {src: "../static/images/solutions/metering.avif", alt: "iEngineering Metering Panel" }
+  image: { src: "../static/images/projects/13.avif", alt: "Export-ready RMU for the Pacific Region" }
 }
-
-
-
-
   };
 
   // --- RENDER DETAILS (single function) ---

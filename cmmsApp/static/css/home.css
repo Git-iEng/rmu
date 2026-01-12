@@ -9,7 +9,7 @@ body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* NEW: avoid padding causing horizontal overflow anywhere */
+/* avoid padding causing horizontal overflow anywhere */
 *,
 *::before,
 *::after {
@@ -26,7 +26,7 @@ body {
   --card-solar: #0f1b2a;
   --white-solar: #ffffff;
   --radius-xxl-solar: 22px;
-  --shadow-soft-solar: 0 10px 30px rgba(0, 0, 0, .08);
+  --shadow-soft-solar: 0 10px 30px rgba(0, 0, 0, 0.08);
   --container-w-solar: 1200px;
   --header-h-solar: 72px;
 
@@ -36,11 +36,14 @@ body {
   --brand-blue-lv: #234a85;
   --panel-border-lv: #e7edf5;
   --container-w-lv: 1200px;
-  --shadow-soft-lv: 0 12px 28px rgba(0, 0, 0, .10);
+  --shadow-soft-lv: 0 12px 28px rgba(0, 0, 0, 0.1);
 
   --bg-dark-lv: #0b1220;
   --overlap-lv: 96px;
   --band-fill-lv: clamp(300px, 34vw, 420px);
+
+  --overlap-solar: 64px;
+  --services-overlap: 64px;
 }
 
 /* Anchor sections below sticky header */
@@ -74,16 +77,25 @@ section[id] {
   align-items: center;
 }
 
-.hero-left-solar-system { position: relative; z-index: 1; }
-.hero-right-solar-system { position: relative; z-index: 1; justify-self: end; }
+.hero-left-solar-system {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-right-solar-system {
+  position: relative;
+  z-index: 1;
+  justify-self: end;
+}
 
 .hero-title-solar-system {
   font-size: clamp(32px, 5vw, 56px);
   line-height: 1.05;
-  letter-spacing: .2px;
+  letter-spacing: 0.2px;
   color: var(--ink-solar);
   margin: 0 0 14px;
   font-weight: 800;
+  margin-top: 30px;
 }
 
 .accent-solar-system {
@@ -112,8 +124,8 @@ section[id] {
   font-weight: 600;
   text-decoration: none;
   border: 2px solid transparent;
-  transition: transform .2s ease, box-shadow .2s ease, background-color .2s ease,
-    color .2s ease, border-color .2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease,
+    color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-primary-solar-system {
@@ -142,15 +154,11 @@ section[id] {
   aspect-ratio: 4/5;
   object-fit: cover;
   border-radius: 18px;
-  box-shadow: 0 16px 40px rgba(6, 18, 32, .18);
+  box-shadow: 0 16px 40px rgba(6, 18, 32, 0.18);
   display: block;
 }
 
 /* Small overlap into next section (desktop only) */
-:root {
-  --overlap-solar: 64px;
-}
-
 @media (min-width: 961px) {
   .hero-img-solar-system {
     transform: translateY(var(--overlap-solar));
@@ -173,6 +181,23 @@ section[id] {
   }
 }
 
+/* HERO IMAGE: keep width/position, reduce height only (desktop) */
+@media (min-width: 1025px) {
+  .grid-hero-solar-system {
+    align-items: start !important;
+  }
+  .hero-right-solar-system {
+    align-self: start !important;
+  }
+
+  .hero-img-solar-system {
+    aspect-ratio: 10 / 11 !important;
+    max-height: 470px !important;
+    height: auto !important;
+    object-fit: cover;
+  }
+}
+
 /* ================== ABOUT BLOCK ================== */
 
 .section-about-lv-electrical-about- {
@@ -192,7 +217,9 @@ section[id] {
   align-items: center;
 }
 
-.media-lv-electrical-about- { margin: 0; }
+.media-lv-electrical-about- {
+  margin: 0;
+}
 
 .img-lv-electrical-about- {
   width: 100%;
@@ -203,7 +230,9 @@ section[id] {
   object-fit: cover;
 }
 
-.copy-lv-electrical-about- { color: var(--ink-lv); }
+.copy-lv-electrical-about- {
+  color: var(--ink-lv);
+}
 
 .title-lv-electrical-about- {
   margin: 0 0 8px;
@@ -239,14 +268,14 @@ section[id] {
   height: 8px;
   border-radius: 999px;
   background: var(--cta-orange-lv);
-  box-shadow: 0 0 0 3px rgba(232, 91, 42, .15);
+  box-shadow: 0 0 0 3px rgba(232, 91, 42, 0.15);
 }
 
 /* simple reveal */
 .reveal-lv-electrical-about- {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity .7s ease, transform .7s ease;
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 .reveal-in-lv-electrical-about- {
@@ -279,15 +308,14 @@ section[id] {
   inset: 0;
   background: linear-gradient(
     90deg,
-    rgba(12, 21, 36, .92) 0%,
-    rgba(12, 21, 36, .70) 45%,
-    rgba(12, 21, 36, .20) 80%
+    rgba(12, 21, 36, 0.92) 0%,
+    rgba(12, 21, 36, 0.7) 45%,
+    rgba(12, 21, 36, 0.2) 80%
   );
 }
 
 .services-head-lv-electrical-services {
   position: sticky;
-  /* NEW: respect header height so it doesn’t hide under nav */
   top: var(--header-h-solar);
   z-index: 5;
   max-width: var(--container-w-lv);
@@ -329,8 +357,6 @@ section[id] {
 }
 
 /* Overlap card */
-:root { --services-overlap: 64px; }
-
 .section-services-lv-electrical-services2 {
   position: relative;
   margin-top: calc(-1 * var(--services-overlap));
@@ -393,7 +419,7 @@ section[id] {
 .arrow-lv-electrical-services {
   font-weight: 800;
   font-size: 16px;
-  transition: transform .25s ease;
+  transition: transform 0.25s ease;
 }
 
 .svc-cta-lv-electrical-services:hover .arrow-lv-electrical-services {
@@ -416,7 +442,9 @@ section[id] {
   align-items: center;
 }
 
-.svc-detail-figure { margin: 0; }
+.svc-detail-figure {
+  margin: 0;
+}
 
 .svc-detail-img {
   display: block;
@@ -438,13 +466,26 @@ section[id] {
   color: var(--muted-lv);
 }
 
+/* FIX: Bullets in service details */
+.svc-detail-copy ul,
+.svc-detail-copy ol {
+  padding-left: 1.25rem;
+  margin: 0.6rem 0 1rem;
+}
 .svc-detail-copy ul {
-  margin: 8px 0 12px 18px;
-  font-size: 14px;
+  list-style: disc;
+}
+.svc-detail-copy ol {
+  list-style: decimal;
+}
+.svc-detail-copy li {
+  margin: 0.35rem 0;
 }
 
 /* hide some cards initially via .is-hidden */
-.is-hidden { display: none; }
+.is-hidden {
+  display: none;
+}
 
 @media (max-width: 1024px) {
   .services-head-lv-electrical-services {
@@ -493,7 +534,7 @@ section[id] {
 .solutions-intro-solar-system-solution {
   margin-top: 0.75rem;
   display: grid;
-  gap: .75rem;
+  gap: 0.75rem;
 }
 
 .grid-solutions-solar-system-solution {
@@ -504,7 +545,7 @@ section[id] {
 
 .card-solar-system-solution {
   background: #fff;
-  border: 1px solid rgba(21, 94, 117, .18);
+  border: 1px solid rgba(21, 94, 117, 0.18);
   border-radius: 14px;
   padding: clamp(14px, 2.6vw, 18px);
   box-shadow: var(--shadow-soft-solar);
@@ -527,7 +568,7 @@ section[id] {
 }
 
 .card-points-solar-system-solution {
-  margin: .5rem 0 0 1.1rem;
+  margin: 0.5rem 0 0 1.1rem;
   padding: 0;
   list-style: disc;
 }
@@ -547,7 +588,7 @@ section[id] {
 
 .lv-highlights-solar-system-solution {
   margin-top: 2rem;
-  border: 1px solid rgba(0, 0, 0, .06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   background: #fff;
@@ -558,7 +599,7 @@ section[id] {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 @media (max-width: 1024px) {
@@ -604,7 +645,7 @@ section[id] {
 .stat-lv-electrical-get-in-touch {
   color: #e8edf7;
   padding: 8px 0;
-  border-right: 1px solid rgba(255, 255, 255, .18);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .stat-lv-electrical-get-in-touch:last-child {
@@ -618,7 +659,7 @@ section[id] {
 }
 
 .stat-label-lv-electrical-get-in-touch {
-  color: rgba(255, 255, 255, .8);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
   margin-top: 6px;
 }
@@ -629,7 +670,7 @@ section[id] {
   transform: translateY(calc(-1 * var(--overlap-lv)));
   background: #fff;
   border-radius: 10px;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, .14);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14);
   display: grid;
   grid-template-columns: 1.05fr 1.2fr;
   overflow: hidden;
@@ -711,14 +752,19 @@ section[id] {
     grid-template-columns: 1fr;
   }
 
-  :root { --overlap-lv: 64px; }
+  :root {
+    --overlap-lv: 64px;
+  }
 }
 
 @media (max-width: 640px) {
   .stats-grid-lv-electrical-get-in-touch {
     grid-template-columns: 1fr;
   }
-  :root { --overlap-lv: 0px; }
+
+  :root {
+    --overlap-lv: 0px;
+  }
 }
 
 /* ================== PROCESS TIMELINE ================== */
@@ -739,7 +785,9 @@ section[id] {
   align-items: start;
 }
 
-.media-lv-electrical-process { margin: 0 0 12px; }
+.media-lv-electrical-process {
+  margin: 0 0 12px;
+}
 
 .img-lv-electrical-process {
   width: 100%;
@@ -762,7 +810,9 @@ section[id] {
   font-size: clamp(14px, 1.6vw, 16px);
 }
 
-.timeline-lv-electrical-process { position: relative; }
+.timeline-lv-electrical-process {
+  position: relative;
+}
 
 .timeline-list-lv-electrical-process {
   list-style: none;
@@ -796,7 +846,7 @@ section[id] {
   background: #0e1116;
   display: grid;
   place-items: center;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
 }
 
 .step-icon-lv-electrical-process img {
@@ -846,24 +896,27 @@ section[id] {
   margin: 0 auto;
 }
 
-.lv-epp-header { margin-bottom: 26px; }
+.lv-epp-header {
+  margin-bottom: 26px;
+}
 
 .lv-epp-kicker {
   display: inline-block;
   font: 600 12px/1.1 system-ui;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #914a05;
-  background: rgba(250, 176, 94, .18);
+  background: rgba(250, 176, 94, 0.18);
   padding: 8px 12px;
   border-radius: 999px;
 }
 
 .lv-epp-header h2 {
   margin: 12px 0 0;
-  font: 700 clamp(22px, 3.5vw, 34px)/1.25 system-ui;
+  font: 700 clamp(22px, 3.5vw, 34px) / 1.25 system-ui;
 }
 
+/* ✅ Keep old grid layout: 3 cards in first row */
 .lv-epp-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -871,18 +924,27 @@ section[id] {
   margin-top: 16px;
 }
 
+/* ✅ Center only last row when there are 2 cards (4 & 5) */
+.lv-epp-grid > .lv-epp-card:nth-last-child(2):nth-child(3n + 1) {
+  grid-column: 2 / 3;
+}
+.lv-epp-grid > .lv-epp-card:nth-last-child(1):nth-child(3n + 2) {
+  grid-column: 3 / 4;
+}
+
 .lv-epp-card {
+  width: 100%;
   background: #fff;
   border: 1px solid var(--panel-border-lv);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, .04);
-  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
 .lv-epp-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, .08);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
   border-color: #ffd7aa;
 }
 
@@ -925,12 +987,18 @@ section[id] {
   font-size: 14px;
 }
 
+/* FIX: bullets visible in project points */
 .lv-epp-points {
-  margin: 0;
+  list-style: disc;
   padding-left: 18px;
+  margin: 0;
 }
 
-/* “More Projects” button */
+.lv-epp-points li {
+  margin: 6px 0;
+}
+
+/* More Projects button */
 .lv-epp-more-wrap {
   grid-column: 1 / -1;
   display: flex;
@@ -948,12 +1016,20 @@ section[id] {
   background: linear-gradient(135deg, #fed7aa, #fdba74);
 }
 
+/* Responsive: 2 columns */
 @media (max-width: 1024px) {
   .lv-epp-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* reset custom centering in 2-col */
+  .lv-epp-grid > .lv-epp-card:nth-last-child(2):nth-child(3n + 1),
+  .lv-epp-grid > .lv-epp-card:nth-last-child(1):nth-child(3n + 2) {
+    grid-column: auto;
   }
 }
 
+/* Responsive: 1 column */
 @media (max-width: 640px) {
   .lv-electric-panel-project {
     padding-inline: 0;
@@ -1005,7 +1081,7 @@ section[id] {
 }
 
 .card-le-electrical-why-us {
-  border: 1px solid rgba(255, 255, 255, .14);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   padding: 16px;
 }
@@ -1021,7 +1097,9 @@ section[id] {
 }
 
 /* right image */
-.media-le-electrical-why-us { margin: 0; }
+.media-le-electrical-why-us {
+  margin: 0;
+}
 
 .img-le-electrical-why-us {
   width: 100%;
@@ -1044,7 +1122,7 @@ section[id] {
   display: grid;
   place-items: center;
   text-decoration: none;
-  box-shadow: 0 12px 28px rgba(232, 91, 42, .35);
+  box-shadow: 0 12px 28px rgba(232, 91, 42, 0.35);
 }
 
 .floating-cta-le-electrical-why-us > * {
@@ -1062,7 +1140,7 @@ section[id] {
   font-size: 22px;
 }
 
-/* NEW: stack why-us on mobile and hide the floating button */
+/* stack why-us on mobile and hide the floating button */
 @media (max-width: 900px) {
   .grid-le-electrical-why-us {
     grid-template-columns: 1fr;
@@ -1166,7 +1244,7 @@ section[id] {
   border-radius: 8px;
 }
 
-/* NEW: keep mission/vision content away from screen edge on phones */
+/* keep mission/vision content away from screen edge on phones */
 @media (max-width: 640px) {
   .-gemini-mission-section {
     padding-inline: 16px;
@@ -1190,7 +1268,7 @@ section[id] {
 .reveal-up-lv-electrical-services {
   opacity: 0;
   transform: translateY(24px);
-  transition: opacity .7s ease, transform .7s ease;
+  transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
 .is-visible,
@@ -1212,5 +1290,416 @@ section[id] {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+}
+/* =========================================================
+   FIX PROJECT GRID:
+   - Row 1: 3 cards
+   - Row 2: 2 cards centered (4 & 5)
+   ========================================================= */
+
+/* Make the grid 6 columns so we can center 2 cards perfectly */
+.lv-epp-grid{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 16px;
+
+  /* layout map:
+     Row1: 1 1 | 2 2 | 3 3
+     Row2: .   | 4 4 | 5 5 | .
+  */
+  grid-template-areas:
+    "p1 p1 p2 p2 p3 p3"
+    ".  p4 p4 p5 p5 .";
+}
+
+/* Each card spans 2 columns (fits the 6-col layout) */
+.lv-epp-grid .lv-epp-card{
+  width: 100%;
+}
+
+/* Assign the first 5 cards into the grid areas */
+.lv-epp-grid .lv-epp-card:nth-of-type(1){ grid-area: p1; }
+.lv-epp-grid .lv-epp-card:nth-of-type(2){ grid-area: p2; }
+.lv-epp-grid .lv-epp-card:nth-of-type(3){ grid-area: p3; }
+.lv-epp-grid .lv-epp-card:nth-of-type(4){ grid-area: p4; }
+.lv-epp-grid .lv-epp-card:nth-of-type(5){ grid-area: p5; }
+
+/* If you have "More Projects" button wrapper inside the same grid */
+.lv-epp-more-wrap{
+  grid-column: 1 / -1;
+}
+
+/* Responsive: back to normal 2 columns */
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: none;
+  }
+  .lv-epp-grid .lv-epp-card:nth-of-type(1),
+  .lv-epp-grid .lv-epp-card:nth-of-type(2),
+  .lv-epp-grid .lv-epp-card:nth-of-type(3),
+  .lv-epp-grid .lv-epp-card:nth-of-type(4),
+  .lv-epp-grid .lv-epp-card:nth-of-type(5){
+    grid-area: auto;
+  }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+   PROJECTS: 3 cards first row, 2 cards centered second row
+   AND make card 4 & 5 SAME SIZE as 1,2,3
+   ========================================================= */
+
+.lv-epp-grid{
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 16px;
+
+  grid-template-areas:
+    "p1 p1 p2 p2 p3 p3"
+    ".  p4 p4 p5 p5 .";
+}
+
+/* Make ALL cards occupy 2 columns (same width rule for everyone) */
+.lv-epp-grid .lv-epp-card{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Make the image area consistent */
+.lv-epp-grid .lv-epp-media{
+  width: 100%;
+  aspect-ratio: 10 / 11;
+  max-height: 360px;
+  overflow: hidden;
+}
+
+/* Make body stretch nicely so cards feel equal height */
+.lv-epp-grid .lv-epp-body{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Assign areas */
+.lv-epp-grid .lv-epp-card:nth-of-type(1){ grid-area: p1; }
+.lv-epp-grid .lv-epp-card:nth-of-type(2){ grid-area: p2; }
+.lv-epp-grid .lv-epp-card:nth-of-type(3){ grid-area: p3; }
+.lv-epp-grid .lv-epp-card:nth-of-type(4){ grid-area: p4; }
+.lv-epp-grid .lv-epp-card:nth-of-type(5){ grid-area: p5; }
+
+/* More button wrapper full width */
+.lv-epp-more-wrap{
+  grid-column: 1 / -1;
+}
+
+/* Tablet: normal 2-column grid */
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: none;
+  }
+  .lv-epp-grid .lv-epp-card:nth-of-type(1),
+  .lv-epp-grid .lv-epp-card:nth-of-type(2),
+  .lv-epp-grid .lv-epp-card:nth-of-type(3),
+  .lv-epp-grid .lv-epp-card:nth-of-type(4),
+  .lv-epp-grid .lv-epp-card:nth-of-type(5){
+    grid-area: auto;
+  }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   PROJECT GRID: keep 3 cards top row, 2 centered second row
+   and FORCE same card width for all 5 cards
+   ========================================================= */
+
+.lv-epp-grid{
+  display: grid !important;
+  grid-template-columns: repeat(6, 1fr) !important;
+  gap: 22px !important;
+  margin-top: 16px !important;
+
+  grid-template-areas:
+    "p1 p1 p2 p2 p3 p3"
+    ".  p4 p4 p5 p5 ." !important;
+
+  justify-items: center !important;  /* important */
+  align-items: stretch !important;
+}
+
+/* place cards */
+.lv-epp-grid .lv-epp-card:nth-of-type(1){ grid-area: p1; }
+.lv-epp-grid .lv-epp-card:nth-of-type(2){ grid-area: p2; }
+.lv-epp-grid .lv-epp-card:nth-of-type(3){ grid-area: p3; }
+.lv-epp-grid .lv-epp-card:nth-of-type(4){ grid-area: p4; }
+.lv-epp-grid .lv-epp-card:nth-of-type(5){ grid-area: p5; }
+
+/* ✅ FORCE same visual size for every card */
+.lv-epp-grid .lv-epp-card{
+  width: 100% !important;
+  max-width: 360px !important;   /* <-- this is the key: all cards same width */
+  min-width: 360px !important;   /* keeps 4 & 5 from shrinking */
+  height: 100% !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* keep image area consistent */
+.lv-epp-grid .lv-epp-media{
+  width: 100% !important;
+  aspect-ratio: 10/11 !important;
+  max-height: 360px !important;
+}
+
+/* body fills remaining height */
+.lv-epp-grid .lv-epp-body{
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* More button */
+.lv-epp-more-wrap{
+  grid-column: 1 / -1 !important;
+}
+
+/* ===== responsive (unchanged behaviour) ===== */
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-areas: none !important;
+    justify-items: stretch !important;
+  }
+
+  .lv-epp-grid .lv-epp-card{
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ================== PROJECT CARDS (FIXED) ================== */
+
+.lv-epp-grid{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 16px;
+
+  /* IMPORTANT: cards should stretch and fill columns (no center shrinking) */
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+/* Center only last row when there are exactly 2 cards (4 & 5) */
+.lv-epp-grid > .lv-epp-card:nth-last-child(2):nth-child(3n + 1) {
+  grid-column: 2 / 3;
+}
+.lv-epp-grid > .lv-epp-card:nth-last-child(1):nth-child(3n + 2) {
+  grid-column: 3 / 4;
+}
+
+.lv-epp-card{
+  width: 100%;
+  max-width: none;   /* <-- remove fixed width */
+  min-width: 0;      /* <-- allow proper shrink */
+  height: 100%;
+
+  background: #fff;
+  border: 1px solid var(--panel-border-lv);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,.04);
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.lv-epp-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 14px 36px rgba(0,0,0,.08);
+  border-color: #ffd7aa;
+}
+
+.lv-epp-media{
+  position: relative;
+  aspect-ratio: 10/11;
+  max-height: 360px;
+  overflow: hidden;
+}
+
+.lv-epp-media img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lv-epp-body{
+  padding: 18px 18px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* More Projects button */
+.lv-epp-more-wrap{
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 6px;
+}
+
+/* Responsive */
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* reset custom centering in 2-col */
+  .lv-epp-grid > .lv-epp-card:nth-last-child(2):nth-child(3n + 1),
+  .lv-epp-grid > .lv-epp-card:nth-last-child(1):nth-child(3n + 2){
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ===========================
+   FORCE FIX: remove huge gaps between 1,2,3
+   Paste this at the VERY BOTTOM of CSS
+   =========================== */
+
+/* Keep section not full wide */
+.lv-epp-container{
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  padding: 0 16px !important;
+}
+
+/* Force real 3-column grid, no space-between behaviour */
+.lv-epp-grid{
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+
+  justify-content: stretch !important;
+  align-items: stretch !important;
+  justify-items: stretch !important;
+}
+
+/* Cards must fill the grid cell (this is the key) */
+.lv-epp-card{
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+/* Keep images consistent */
+.lv-epp-media{
+  width: 100% !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ===== FINAL OVERRIDE: PROJECT GRID (put at VERY END of CSS) ===== */
+
+.lv-epp-grid{
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+  margin-top: 16px !important;
+
+  grid-template-areas:
+    "p1 p1 p2 p2 p3 p3"
+    ".  p4 p4 p5 p5 ." !important;
+
+  justify-items: stretch !important;
+  align-items: stretch !important;
+}
+
+.lv-epp-grid > .lv-epp-card:nth-of-type(1){ grid-area: p1 !important; }
+.lv-epp-grid > .lv-epp-card:nth-of-type(2){ grid-area: p2 !important; }
+.lv-epp-grid > .lv-epp-card:nth-of-type(3){ grid-area: p3 !important; }
+.lv-epp-grid > .lv-epp-card:nth-of-type(4){ grid-area: p4 !important; }
+.lv-epp-grid > .lv-epp-card:nth-of-type(5){ grid-area: p5 !important; }
+
+.lv-epp-card{
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.lv-epp-media{
+  width: 100% !important;
+  aspect-ratio: 10 / 11 !important;
+  max-height: 360px !important;
+  overflow: hidden !important;
+}
+
+.lv-epp-media img{
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+@media (max-width: 1024px){
+  .lv-epp-grid{
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-areas: none !important;
+  }
+  .lv-epp-grid > .lv-epp-card:nth-of-type(1),
+  .lv-epp-grid > .lv-epp-card:nth-of-type(2),
+  .lv-epp-grid > .lv-epp-card:nth-of-type(3),
+  .lv-epp-grid > .lv-epp-card:nth-of-type(4),
+  .lv-epp-grid > .lv-epp-card:nth-of-type(5){
+    grid-area: auto !important;
+  }
+}
+
+@media (max-width: 640px){
+  .lv-epp-grid{
+    grid-template-columns: 1fr !important;
   }
 }
