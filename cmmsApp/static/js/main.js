@@ -975,7 +975,7 @@ pdb: {
       <li>Earthing switch provisions and earthing accessories</li>
     </ul>
   `,
-  image: { src: "../static/images/projects/12.avif", alt: "RMU Components and Accessories" }
+  image: { src: "../static/images/projects/12.png", alt: "RMU Components and Accessories" }
 },
 
 metering: {
