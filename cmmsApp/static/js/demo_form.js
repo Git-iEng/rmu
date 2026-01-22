@@ -192,36 +192,102 @@ const COUNTRIES = [
   { code: "ZW", name: "Zimbabwe", dial: "+263" }
 ];
 
+
 (function () {
   const modal = document.getElementById("demoModal");
   const openers = document.querySelectorAll(".js-open-demo, .book-demo-btn");
-  const closers = modal ? modal.querySelectorAll("[data-close-demo]") : [];
   const form = document.getElementById("demoForm");
   if (!modal || !form) return;
 
   const submitBtn = document.getElementById("submitBtn");
   const countrySelect = document.getElementById("country");
   const phoneInput = document.getElementById("phone");
+  const closers = modal.querySelectorAll("[data-close-demo]");
 
-  // Build countries
-  // ---- helpers ---------------------------------------------------------------
-  const normalizeDial = s => (s || "").replace(/[^0-9+]/g, "");   // "+1-242" -> "+1242"
+  // ---------------- toast ----------------
+  function showToast(msg, type = "error", timeoutMs = 4000) {
+    const root = document.getElementById("cmmsToastRoot");
+    if (!root) return;
 
-  // after we populate the <select>, cache option meta so lookups are fast
+    const el = document.createElement("div");
+    el.className = "cmms-toast " + (type === "ok" ? "cmms-toast--ok" : "cmms-toast--error");
+    el.innerHTML = `<span aria-hidden="true">${type === "ok" ? "✔️" : "⚠️"}</span>
+                    <div>${msg}</div>
+                    <button class="cmms-toast__close" aria-label="Close">×</button>`;
+    root.appendChild(el);
+
+    const remove = () => el.remove();
+    el.querySelector(".cmms-toast__close").addEventListener("click", remove);
+    setTimeout(remove, timeoutMs);
+  }
+
+  // ---------------- loading state ----------------
+  let submitting = false;
+
+  function setLoading(is) {
+    if (!submitBtn) return;
+    if (is) {
+      submitBtn.classList.add("is-loading");
+      submitBtn.disabled = true;
+    } else {
+      submitBtn.classList.remove("is-loading");
+      submitBtn.disabled = false;
+    }
+  }
+
+  function resetSubmitState() {
+    submitting = false;
+    setLoading(false);
+  }
+
+  // ---------------- modal open/close ----------------
+  const open = (e) => {
+    e?.preventDefault();
+    modal.classList.add("is-open");
+    resetSubmitState(); // important
+  };
+
+  const close = (e) => {
+    e?.preventDefault();
+    modal.classList.remove("is-open");
+    resetSubmitState(); // important
+  };
+
+  openers.forEach(el => el.addEventListener("click", open));
+  closers.forEach(el => el.addEventListener("click", close));
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") close(e);
+  });
+
+  // ---------------- errors ----------------
+  const err = (name, msg = "") => {
+    const el = document.querySelector(`[data-error-for="${name}"]`);
+    if (el) el.textContent = msg;
+  };
+
+  const clearErr = () => {
+    form.querySelectorAll(".error").forEach(e => (e.textContent = ""));
+    form.querySelectorAll(".is-error").forEach(el => el.classList.remove("is-error"));
+    form.querySelectorAll("[aria-invalid='true']").forEach(el => el.removeAttribute("aria-invalid"));
+  };
+
+  // ---------------- country helpers ----------------
+  const normalizeDial = (s) => (s || "").replace(/[^0-9+]/g, "");
   let COUNTRY_OPT_CACHE = [];
+
   function rebuildCountryCache() {
     COUNTRY_OPT_CACHE = Array.from(countrySelect.options)
-      .slice(1) // skip default
+      .slice(1)
       .map(o => {
         const [code, dial] = (o.value || "").split("|");
         return { value: o.value, code, dial, nDial: normalizeDial(dial || "") };
       });
   }
 
-  // find best (longest) dial code that matches the typed phone
   function findOptionByPhone(val) {
-    const p = normalizeDial(val.trim());
+    const p = normalizeDial((val || "").trim());
     if (!p.startsWith("+")) return null;
+
     let best = null;
     for (const opt of COUNTRY_OPT_CACHE) {
       if (opt.nDial && p.startsWith(opt.nDial)) {
@@ -231,145 +297,177 @@ const COUNTRIES = [
     return best;
   }
 
-  // ensure phone value starts with the selected dial code (format preserved)
   function setPhoneDial(dial) {
     if (!dial) return;
-    const rest = phoneInput.value.replace(/^\+\s*[\d\-\s()]+/, "").trim();
+    const rest = (phoneInput.value || "").replace(/^\+\s*[\d\-\s()]+/, "").trim();
     phoneInput.value = `${dial}${rest ? " " + rest : ""}`;
   }
 
-  // ---- build countries (unchanged) ------------------------------------------
+  // build select options
   const frag = document.createDocumentFragment();
   const def = document.createElement("option");
-  def.value = ""; def.textContent = "-- Select Country --";
+  def.value = "";
+  def.textContent = "-- Select Country --";
   frag.appendChild(def);
+
   COUNTRIES.forEach(c => {
     const o = document.createElement("option");
     o.value = `${c.code}|${c.dial}`;
     o.textContent = `${c.name} (${c.dial})`;
     frag.appendChild(o);
   });
-  countrySelect.appendChild(frag);
-  rebuildCountryCache(); // build cache now that options exist
 
-  // ---- phone -> country (robust) --------------------------------------------
+  countrySelect.appendChild(frag);
+  rebuildCountryCache();
+
+  // phone -> country
   phoneInput.addEventListener("input", () => {
     const match = findOptionByPhone(phoneInput.value);
-    if (match) {
-      countrySelect.value = match.value;
-    }
+    if (match) countrySelect.value = match.value;
   });
 
-  // ---- country -> phone (autofill dial + update placeholder) -----------------
+  // country -> phone
   countrySelect.addEventListener("change", () => {
-    const [code, dial] = (countrySelect.value || "").split("|");
+    const [, dial] = (countrySelect.value || "").split("|");
     if (!dial) {
-      // user picked the default blank option
-      phoneInput.placeholder = "+61 4xx xxx xxx"; // or your default
+      phoneInput.placeholder = "+61 4xx xxx xxx";
       return;
     }
-    // set placeholder to reflect selected country
-    phoneInput.placeholder = `${dial} …`;
-    // make phone start with the chosen dial code
+    phoneInput.placeholder = `${dial} ...`;
     const current = normalizeDial(phoneInput.value);
-    if (!current.startsWith(normalizeDial(dial))) {
-      // replace any existing +prefix with the selected dial
-      setPhoneDial(dial);
-    } else {
-      // normalize formatting to the canonical dial (keeps remainder)
-      setPhoneDial(dial);
-    }
+    if (!current.startsWith(normalizeDial(dial))) setPhoneDial(dial);
   });
 
+  // ---------------- validation ----------------
+  function validate() {
+    clearErr();
 
-  // modal open/close
-  const open = e => { e?.preventDefault(); modal.classList.add("is-open"); };
-  const close = e => { e?.preventDefault(); modal.classList.remove("is-open"); };
-  openers.forEach(el => el.addEventListener("click", open));
-  closers.forEach(el => el.addEventListener("click", close));
-  document.addEventListener("keydown", e => e.key === "Escape" && close());
+    const fail = (name, msg) => {
+      err(name, msg);
+      showToast(msg, "error");
+      const input = form.querySelector(`[name="${name}"]`);
+      if (input) {
+        input.classList.add("is-error");
+        input.setAttribute("aria-invalid", "true");
+        input.scrollIntoView({ block: "center", behavior: "smooth" });
+        setTimeout(() => input.focus({ preventScroll: true }), 250);
+      }
+      return false;
+    };
 
-  // errors
-  const err = (name, msg = "") => {
-    const el = document.querySelector(`[data-error-for="${name}"]`);
-    if (el) el.textContent = msg;
-  };
-  const clearErr = () => form.querySelectorAll(".error").forEach(e => e.textContent = "");
+    const full_name = (form.full_name?.value || "").trim();
+    if (!/^[A-Za-z\s'.-]{2,}$/.test(full_name))
+      return fail("full_name", "Please enter a valid full name (letters only).");
 
-  // auto select country from +code
-  phoneInput.addEventListener("input", () => {
-    const m = phoneInput.value.trim().match(/^\+[\d]{1,4}/);
-    if (m) {
-      const dial = m[0];
-      const opt = Array.from(countrySelect.options).find(o => o.value.endsWith("|" + dial));
-      if (opt) countrySelect.value = opt.value;
-    }
-  });
-function validate() {
-  clearErr();
-  // clear old visual errors
-  form.querySelectorAll('.is-error').forEach(el => el.classList.remove('is-error'));
+    const company = (form.company?.value || "").trim();
+    if (company.length < 2)
+      return fail("company", "Company is required.");
 
-  // helper: mark + toast + focus the first error
-  const fail = (name, msg) => {
-    err(name, msg);
-    showToast(msg, 'error');                 // <- toast popup
-    const input = form.querySelector(`[name="${name}"]`);
-    if (input) {
-      input.classList.add('is-error');
-      input.setAttribute('aria-invalid', 'true');
-      input.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      // delay focus a tick so scroll works smoothly
-      setTimeout(() => input.focus({ preventScroll: true }), 250);
-    }
-    return false;
-  };
+    const email = (form.email?.value || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+      return fail("email", "Enter a valid email address.");
 
-  const full_name = form.full_name.value.trim();
-  if (!/^[A-Za-z\s'.-]{2,}$/.test(full_name))
-    return fail("full_name", "Please enter a valid full name (letters only).");
+    const phone = (form.phone?.value || "").trim();
+    if (!/^\+?\d[\d\s\-()]{6,}$/.test(phone))
+      return fail("phone", "Enter a valid phone number.");
 
-  const company = form.company.value.trim();
-  if (company.length < 2)
-    return fail("company", "Company is required.");
+    if (!form.country?.value)
+      return fail("country", "Please select a country.");
 
-  const email = form.email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
-    return fail("email", "Enter a valid email address.");
+    return true;
+  }
+// Prevent double-binding if script is included twice
+if (form.dataset.boundSubmit === "1") return;
+form.dataset.boundSubmit = "1";
 
-  const phone = form.phone.value.trim();
-  if (!/^\+?\d[\d\s\-()]{6,}$/.test(phone))
-    return fail("phone", "Enter a valid phone number.");
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  if (!form.country.value)
-    return fail("country", "Please select a country.");
+  if (submitting) return;
 
-  return true; // all good
-}
-
-
-  // loading
-  function setLoading(is) {
-    if (is) { submitBtn.classList.add("is-loading"); submitBtn.disabled = true; }
-    else { submitBtn.classList.remove("is-loading"); submitBtn.disabled = false; }
+  if (!validate()) {
+    resetSubmitState();
+    return;
   }
 
-  form.addEventListener("submit", (e) => {
-    if (!validate()) { e.preventDefault(); return; }
-    setLoading(true); // server redirects on success
-  });
+  submitting = true;
+  setLoading(true);
+
+  // Safety timeout so button never stays loading forever
+  const safetyTimer = setTimeout(() => {
+    if (submitting) {
+      showToast("Taking too long. Please try again.", "error");
+      resetSubmitState();
+    }
+  }, 15000);
+
+  try {
+    const res = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "X-Requested-With": "XMLHttpRequest" },
+      credentials: "same-origin",
+      redirect: "follow",
+    });
+
+    // If backend sends a redirect (302 -> thank you page), fetch will follow it
+    // and we will get HTML. In that case just navigate to res.url
+    const ct = (res.headers.get("content-type") || "").toLowerCase();
+
+    // Case 1: JSON response (your desired AJAX format)
+    if (ct.includes("application/json")) {
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.ok) {
+        const errors = data.errors || {};
+        Object.keys(errors).forEach((k) => err(k, errors[k]));
+        showToast("Please fix the errors and try again.", "error");
+        return;
+      }
+
+      // Success: close modal, reset, then go to thanks
+      form.reset();
+      clearErr();
+      modal.classList.remove("is-open");
+
+      const redirectUrl =
+        data.redirect ||
+        form.querySelector('input[name="next"]')?.value ||
+        "/thanks/";
+
+      // Use assign so it creates history entry (so you can go back to previous page)
+      window.location.assign(redirectUrl);
+      return;
+    }
+
+    // Case 2: HTML response (usually because Django returned a normal redirect page)
+    // If res.ok and we got HTML, navigate to the final URL (likely thank-you page)
+    if (res.ok) {
+      form.reset();
+      clearErr();
+      modal.classList.remove("is-open");
+      window.location.assign(res.url);
+      return;
+    }
+
+    // Otherwise error
+    showToast("Server error. Please try again.", "error");
+
+  } catch (ex) {
+    showToast("Network error. Please try again.", "error");
+  } finally {
+    clearTimeout(safetyTimer);
+    resetSubmitState(); // ALWAYS stop spinner
+  }
+});
+
+// Reset when user returns (back button / bfcache)
+window.addEventListener("pageshow", () => {
+  // remove loading state always
+  resetSubmitState();
+  // also reset form so it is fresh when user returns from thanks page
+  form.reset();
+  clearErr();
+});
+
 })();
-
-function showToast(msg, type='error', timeoutMs=4000){
-  const root = document.getElementById('cmmsToastRoot'); if(!root) return;
-  const el = document.createElement('div');
-  el.className = 'cmms-toast ' + (type==='ok' ? 'cmms-toast--ok' : 'cmms-toast--error');
-  el.innerHTML = `<span aria-hidden="true">${type==='ok'?'✔️':'⚠️'}</span>
-                  <div>${msg}</div>
-                  <button class="cmms-toast__close" aria-label="Close">×</button>`;
-  root.appendChild(el);
-  const remove = () => el.remove();
-  el.querySelector('.cmms-toast__close').addEventListener('click', remove);
-  setTimeout(remove, timeoutMs);
-}
-
