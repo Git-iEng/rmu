@@ -317,21 +317,6 @@ def contact_block_submit(request):
     messages.success(request, "Thanks! Your request was submitted successfully.")
     return redirect(reverse("cmmsApp:contact_thanks"))
 
-def neplan_electricity(request):
-    # Build once here
-    countries = []
-    for c in pycountry.countries:
-        try:
-            cc = phonenumbers.country_code_for_region(c.alpha_2)
-        except Exception:
-            cc = None
-        if cc:
-            countries.append({"alpha2": c.alpha_2, "name": c.name, "dial": f"+{cc}"})
-    countries.sort(key=lambda x: x["name"])
-
-    return render(request, "neplan-electricity.html", {"countries": countries})
-
-
 def country_list(request):
   """Return [{alpha2,name,dial}] sorted by name."""
   data = []

@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-tpzqxw&&@03wq2yzgf!gzh6u2=044s2j+_!#jioe(#f^6%quzo
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # keep false on server, true locally if needed
+DEBUG = False 
 
 if DEBUG:
     SECURE_SSL_REDIRECT = False
@@ -52,7 +52,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -167,5 +167,3 @@ DEMO_RECIPIENTS = CONTACT_RECIPIENTS
 CONTACT_INBOX = CONTACT_RECIPIENTS[0]
 EMAIL_TIMEOUT = 15
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
