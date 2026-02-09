@@ -210,14 +210,14 @@ const COUNTRIES = [
     if (!root) return;
 
     const el = document.createElement("div");
-    el.className = "cmms-toast " + (type === "ok" ? "cmms-toast--ok" : "cmms-toast--error");
+    el.className = "rmu-toast " + (type === "ok" ? "rmu-toast--ok" : "rmu-toast--error");
     el.innerHTML = `<span aria-hidden="true">${type === "ok" ? "✔️" : "⚠️"}</span>
                     <div>${msg}</div>
-                    <button class="cmms-toast__close" aria-label="Close">×</button>`;
+                    <button class="rmu-toast__close" aria-label="Close">×</button>`;
     root.appendChild(el);
 
     const remove = () => el.remove();
-    el.querySelector(".cmms-toast__close").addEventListener("click", remove);
+    el.querySelector(".rmu-toast__close").addEventListener("click", remove);
     setTimeout(remove, timeoutMs);
   }
 

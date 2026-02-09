@@ -12,7 +12,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
         {% if not form_only %}
         <!-- Left side (you can replace this content per page) -->
-        <aside class="consult-left">
+        <aside class="consult-left reveal-up">
             <span class="consult-badge">Why Choose Us</span>
             <h2 class="consult-title">Join 500+<br>companies<br>trusting us</h2>
             <a href="/contact/" class="consult-cta">
@@ -25,7 +25,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </aside>
         {% endif %}
         <!-- Right side: the form -->
-        <div class="consult-form">
+        <div class="consult-form reveal-up">
             {# Optional: the old server messages will be converted to toasts in JS #}
             {% if messages %}
             {% for m in messages %}
@@ -33,9 +33,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             {% endfor %}
             {% endif %}
 
-            <h3 class="consult-form__title">Send a message</h3>
+            <h3 class="consult-form__title reveal-up">Send a message</h3>
 
-            <form id="consult-form" class="consult-grid" method="post" action="{% url 'cmmsApp:contact_submit' %}"
+            <form id="consult-form" class="consult-grid reveal-up" method="post" action="{% url 'cmmsApp:contact_submit' %}"
                 novalidate>
                 {% csrf_token %}
 
@@ -55,13 +55,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
                 <!-- <select name="service" aria-label="Select Services" required>
                     <option value="" selected disabled>Select Services *</option> -->
-                    <!-- <option>NEPLAN Electricity</option> -->
-                    <!-- <option>NEPLAN Electricity</option>
-                    <option>NEPLAN Gas, Water and Heating</option>
-                    <option>NEPLAN Anywhere</option>
-                    <option>NEPLAN Asset Management</option>
-                    <option>NEPLAN OEM / SaS Webservice</option>
-                    <option>NEPLAN  Research</option>
+                    <!-- <option>rmu Electricity</option> -->
+                    <!-- <option>rmu Electricity</option>
+                    <option>rmu Gas, Water and Heating</option>
+                    <option>rmu Anywhere</option>
+                    <option>rmu Asset Management</option>
+                    <option>rmu OEM / SaS Webservice</option>
+                    <option>rmu  Research</option>
                     <option>Additional CLoud</option>
                     <option>Additional Solutions</option>
                 </select> -->

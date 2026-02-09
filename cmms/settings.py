@@ -23,8 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-tpzqxw&&@03wq2yzgf!gzh6u2=044s2j+_!#jioe(#f^6%quzo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True  # keep false on server, true locally if needed
 
 if DEBUG:
     SECURE_SSL_REDIRECT = False
@@ -35,8 +34,13 @@ else:
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
+
 ALLOWED_HOSTS = ["rmu.ieng.tech", ".ieng.tech"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+CSRF_TRUSTED_ORIGINS = ["https://*.ieng.tech"]
+
 
 
 # Application definition
@@ -140,7 +144,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Where to store the Excel (optional)
-CONTACT_SUBMISSIONS_XLSX = BASE_DIR / "contact_submissions.xlsx"
+# CONTACT_SUBMISSIONS_XLSX = BASE_DIR / "contact_submissions.xlsx"
 
 # Email (configure to your provider)
 
@@ -154,10 +158,11 @@ EMAIL_HOST_PASSWORD = 'test@iEng'  # Your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_RECIPIENTS = [
     "shila@iengaust.com.au",
-   "enquirries@iengaust.com.au",
    "test@ieng.tech",
+   "enquiries@iengaust.com.au",
 ]
-CONTACT_RECIPIENTS = ["shila@iengaust.com.au","enquirries@iengaust.com.au", "test@ieng.tech"]
+CONTACT_RECIPIENTS = [  
+"shila@iengaust.com.au","test@ieng.tech","enquiries@iengaust.com.au"]
 DEMO_RECIPIENTS = CONTACT_RECIPIENTS
 
 # CONTACT_EMAIL = 'diksha@iengaust.com.au'
@@ -167,3 +172,6 @@ DEMO_RECIPIENTS = CONTACT_RECIPIENTS
 CONTACT_INBOX = CONTACT_RECIPIENTS[0]
 EMAIL_TIMEOUT = 15
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# CSRF_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
+# SECURE_SSL_REDIRECT = True
