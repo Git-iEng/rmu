@@ -279,37 +279,39 @@ def contact_block_submit(request):
     """
     Handles the 'Get Free Consulting' form shown in the new block.
     - Normalizes Country <-> Phone
-    - Appends a row to CONTACT_SUBMISSIONS_XLSX
     - Sends email to CONTACT_RECIPIENTS
     """
     if request.method != "POST":
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
-        # CAPTCHA check
+    # CAPTCHA check
     if not verify_recaptcha(request):
-        messages.error(request, "Please complete the CAPTCHA.")
+        messages.error(request, "CAPTCHA verification failed. Please try again.")
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
-
-    name    = (request.POST.get("name")    or "").strip()
-    email   = (request.POST.get("email")   or "").strip()
-    phone   = (request.POST.get("phone")   or "").strip()
+    # Read form fields
+    name = (request.POST.get("name") or "").strip()
+    email = (request.POST.get("email") or "").strip()
+    phone = (request.POST.get("phone") or "").strip()
     country = (request.POST.get("country") or "").strip()
     service = (request.POST.get("service") or "").strip()
     message = (request.POST.get("message") or "").strip()
 
-    # --- Basic validation (lightweight) ---
+    # Basic validation
     errors = []
+
     if not re.match(r"^[A-Za-z\s'.-]{2,}$", name):
         errors.append("Please enter a valid name.")
+
     try:
         validate_email(email)
     except ValidationError:
         errors.append("Enter a valid email address.")
+
     if not re.match(r"^\+?\d[\d\s\-()]{6,}$", phone):
         errors.append("Enter a valid phone number.")
+
     if not country and not phone.startswith("+"):
-        # If there's no +code in phone, we do need a country hint
         errors.append("Please enter your country.")
 
     if errors:
@@ -317,12 +319,12 @@ def contact_block_submit(request):
             messages.error(request, e)
         return redirect(request.META.get("HTTP_REFERER", "/"))
 
-    # --- Normalize country/phone ---
+    # Normalize country/phone
     e164_phone, alpha2, country_name = normalize_phone_and_country(phone, country)
     dial_code = _dial_code_from_alpha2(alpha2)
 
-    # --- Email notification ---
-    subject = f"[Website] Consulting request: {name} – {service or 'General'}"
+    # Email notification
+    subject = f"[Website] Consulting request: {name} - {service or 'General'}"
     text_body = "\n".join([
         "A new consulting request was submitted:",
         f"Name: {name}",
@@ -334,13 +336,12 @@ def contact_block_submit(request):
         "Message:",
         message or "(none)",
         "",
-        f"From: {request.META.get('HTTP_REFERER','')}",
-        f"IP:   {request.META.get('REMOTE_ADDR','')}",
+        f"From: {request.META.get('HTTP_REFERER', '')}",
+        f"IP:   {request.META.get('REMOTE_ADDR', '')}",
     ])
-    # Reuse your async sender
+
     _send_contact_email_async(subject, text_body, None)
 
-    messages.success(request, "Thanks! Your request was submitted successfully.")
     return redirect(reverse("cmmsApp:contact_thanks"))
 
 def country_list(request):
@@ -355,14 +356,19 @@ def country_list(request):
           data.append({"alpha2": c.alpha_2, "name": c.name, "dial": f"+{cc}"})
   data.sort(key=lambda x: x["name"])
   return JsonResponse(data, safe=False)
+
+
 def contact_thanks(request):
     return render(request, "contact_thanks.html", {})
 
 
 def verify_recaptcha(request):
     captcha_response = (request.POST.get("g-recaptcha-response") or "").strip()
+    print("captcha_response:", captcha_response)
+    print("captcha length:", len(captcha_response) if captcha_response else 0)
 
     if not captcha_response:
+        print("reCAPTCHA failed: no captcha response")
         return False
 
     data = {
@@ -377,6 +383,8 @@ def verify_recaptcha(request):
             timeout=10
         )
         result = response.json()
+        print("reCAPTCHA result:", result)
         return result.get("success", False)
-    except requests.RequestException:
+    except requests.RequestException as e:
+        print("reCAPTCHA request error:", str(e))
         return False
