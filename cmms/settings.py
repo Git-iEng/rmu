@@ -157,23 +157,48 @@ EMAIL_HOST_USER = 'test@ieng.tech'  # Your email address
 EMAIL_HOST_PASSWORD = 'test@iEng'  # Your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 CONTACT_RECIPIENTS = [
-    "sujay@iengaust.com.au",
-    "gaurav@iengaust.com.au",
-   
+    "shila@iengaust.com.au",
+    "aarti@iengaust.com.au",
+     "test@ieng.tech",
 ]
-CONTACT_RECIPIENTS = [  
-"sujay@iengaust.com.au", "gaurav@iengaust.com.au"]
+# CONTACT_RECIPIENTS = [
+#     "diptee@iengaust.com.au",
+    
+# ]
+CONTACT_RECIPIENTS = ["shila@iengaust.com.au","aarti@iengaust.com.au", "test@ieng.tech"]
+# CONTACT_RECIPIENTS = ["diptee@iengaust.com.au"]
 DEMO_RECIPIENTS = CONTACT_RECIPIENTS
 
 # CONTACT_EMAIL = 'diksha@iengaust.com.au'
 
 
+CSRF_TRUSTED_ORIGINS = ["https://*.ieng.tech"]
+# Application definition
+# ============================================================
+# CHANGE BY Diptee - 10-Sep-2026
+# EMAIL OTP SESSION CONFIGURATION - START
+# ============================================================
+ 
+# Store OTP session information in signed cookies.
+# This avoids dependency on the django_session database table.
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+ 
+# Use a separate session cookie for Transformer website.
+SESSION_COOKIE_NAME = "transformer_sessionid"
+ 
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+ 
+# ============================================================
+# CHANGE BY Diptee - EMAIL OTP SESSION CONFIGURATION - END
+# ============================================================
+ 
+ 
 # Who receives the notifications
 CONTACT_INBOX = CONTACT_RECIPIENTS[0]
 EMAIL_TIMEOUT = 15
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 RECAPTCHA_SITE_KEY = "6LdJgJgsAAAAACrJJ-nuo1Iw2sBxiKpTWADZ5stZ"
 RECAPTCHA_SECRET_KEY = "6LdJgJgsAAAAAMtKmtGv8pLZ3y7pvxV0UAe7Sx10"

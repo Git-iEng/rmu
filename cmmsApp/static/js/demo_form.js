@@ -192,282 +192,2111 @@ const COUNTRIES = [
   { code: "ZW", name: "Zimbabwe", dial: "+263" }
 ];
 
+// ============================================================
+// CHANGE BY diptee - 10-Sep-2026
+// Submit Enquiry - Email OTP Verification
+// ============================================================
 
 (function () {
+
   const modal = document.getElementById("demoModal");
-  const openers = document.querySelectorAll(".js-open-demo, .book-demo-btn");
+  const openers = document.querySelectorAll(
+    ".js-open-demo, .book-demo-btn"
+  );
+
   const form = document.getElementById("demoForm");
+
   if (!modal || !form) return;
 
-  const submitBtn = document.getElementById("submitBtn");
-  const countrySelect = document.getElementById("country");
-  const phoneInput = document.getElementById("phone");
-  const closers = modal.querySelectorAll("[data-close-demo]");
 
-  // ---------------- toast ----------------
-  function showToast(msg, type = "error", timeoutMs = 4000) {
-    const root = document.getElementById("cmmsToastRoot");
-    if (!root) return;
+  // ==========================================================
+  // EXISTING FORM ELEMENTS
+  // ==========================================================
 
-    const el = document.createElement("div");
-    el.className = "rmu-toast " + (type === "ok" ? "rmu-toast--ok" : "rmu-toast--error");
-    el.innerHTML = `<span aria-hidden="true">${type === "ok" ? "✔️" : "⚠️"}</span>
-                    <div>${msg}</div>
-                    <button class="rmu-toast__close" aria-label="Close">×</button>`;
-    root.appendChild(el);
+  const submitBtn =
+    document.getElementById("submitBtn");
 
-    const remove = () => el.remove();
-    el.querySelector(".rmu-toast__close").addEventListener("click", remove);
-    setTimeout(remove, timeoutMs);
-  }
+  const countrySelect =
+    document.getElementById("country");
 
-  // ---------------- loading state ----------------
-  let submitting = false;
+  const phoneInput =
+    document.getElementById("phone");
 
-  function setLoading(is) {
-    if (!submitBtn) return;
-    if (is) {
-      submitBtn.classList.add("is-loading");
-      submitBtn.disabled = true;
-    } else {
-      submitBtn.classList.remove("is-loading");
-      submitBtn.disabled = false;
-    }
-  }
+  const closers =
+    modal.querySelectorAll("[data-close-demo]");
 
-  function resetSubmitState() {
-    submitting = false;
-    setLoading(false);
-  }
 
-  // ---------------- modal open/close ----------------
-  const open = (e) => {
-    e?.preventDefault();
-    modal.classList.add("is-open");
-    resetSubmitState(); // important
-  };
+  // ==========================================================
+  // CHANGE BY diptee
+  // EMAIL OTP ELEMENTS
+  // ==========================================================
 
-  const close = (e) => {
-    e?.preventDefault();
-    modal.classList.remove("is-open");
-    resetSubmitState(); // important
-  };
+  const emailInput =
+    document.getElementById("email");
 
-  openers.forEach(el => el.addEventListener("click", open));
-  closers.forEach(el => el.addEventListener("click", close));
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") close(e);
-  });
+  const verifyEmailBtn =
+    document.getElementById("demo_verify_email");
 
-  // ---------------- errors ----------------
-  const err = (name, msg = "") => {
-    const el = document.querySelector(`[data-error-for="${name}"]`);
-    if (el) el.textContent = msg;
-  };
+  const otpInput =
+    document.getElementById("demo_otp");
 
-  const clearErr = () => {
-    form.querySelectorAll(".error").forEach(e => (e.textContent = ""));
-    form.querySelectorAll(".is-error").forEach(el => el.classList.remove("is-error"));
-    form.querySelectorAll("[aria-invalid='true']").forEach(el => el.removeAttribute("aria-invalid"));
-  };
+  const otpActions =
+    document.getElementById("demo_otp_actions");
 
-  // ---------------- country helpers ----------------
-  const normalizeDial = (s) => (s || "").replace(/[^0-9+]/g, "");
-  let COUNTRY_OPT_CACHE = [];
+  const otpTimer =
+    document.getElementById("demo_otp_timer");
 
-  function rebuildCountryCache() {
-    COUNTRY_OPT_CACHE = Array.from(countrySelect.options)
-      .slice(1)
-      .map(o => {
-        const [code, dial] = (o.value || "").split("|");
-        return { value: o.value, code, dial, nDial: normalizeDial(dial || "") };
-      });
-  }
+  const verifyOtpBtn =
+    document.getElementById("demo_verify_otp");
 
-  function findOptionByPhone(val) {
-    const p = normalizeDial((val || "").trim());
-    if (!p.startsWith("+")) return null;
+  const resendOtpBtn =
+    document.getElementById("demo_resend_otp");
 
-    let best = null;
-    for (const opt of COUNTRY_OPT_CACHE) {
-      if (opt.nDial && p.startsWith(opt.nDial)) {
-        if (!best || opt.nDial.length > best.nDial.length) best = opt;
-      }
-    }
-    return best;
-  }
+  const verifiedBadge =
+    document.getElementById("demo_email_verified");
 
-  function setPhoneDial(dial) {
-    if (!dial) return;
-    const rest = (phoneInput.value || "").replace(/^\+\s*[\d\-\s()]+/, "").trim();
-    phoneInput.value = `${dial}${rest ? " " + rest : ""}`;
-  }
+  const otpMessage =
+    document.getElementById("demo_otp_message");
 
-  // build select options
-  const frag = document.createDocumentFragment();
-  const def = document.createElement("option");
-  def.value = "";
-  def.textContent = "-- Select Country --";
-  frag.appendChild(def);
+  const verificationToken =
+    document.getElementById(
+      "demo_email_verification_token"
+    );
 
-  COUNTRIES.forEach(c => {
-    const o = document.createElement("option");
-    o.value = `${c.code}|${c.dial}`;
-    o.textContent = `${c.name} (${c.dial})`;
-    frag.appendChild(o);
-  });
 
-  countrySelect.appendChild(frag);
-  rebuildCountryCache();
-
-  // phone -> country
-  phoneInput.addEventListener("input", () => {
-    const match = findOptionByPhone(phoneInput.value);
-    if (match) countrySelect.value = match.value;
-  });
-
-  // country -> phone
-  countrySelect.addEventListener("change", () => {
-    const [, dial] = (countrySelect.value || "").split("|");
-    if (!dial) {
-      phoneInput.placeholder = "+61 4xx xxx xxx";
-      return;
-    }
-    phoneInput.placeholder = `${dial} ...`;
-    const current = normalizeDial(phoneInput.value);
-    if (!current.startsWith(normalizeDial(dial))) setPhoneDial(dial);
-  });
-
-  // ---------------- validation ----------------
-  function validate() {
-    clearErr();
-
-    const fail = (name, msg) => {
-      err(name, msg);
-      showToast(msg, "error");
-      const input = form.querySelector(`[name="${name}"]`);
-      if (input) {
-        input.classList.add("is-error");
-        input.setAttribute("aria-invalid", "true");
-        input.scrollIntoView({ block: "center", behavior: "smooth" });
-        setTimeout(() => input.focus({ preventScroll: true }), 250);
-      }
-      return false;
-    };
-
-    const full_name = (form.full_name?.value || "").trim();
-    if (!/^[A-Za-z\s'.-]{2,}$/.test(full_name))
-      return fail("full_name", "Please enter a valid full name (letters only).");
-
-    const company = (form.company?.value || "").trim();
-    if (company.length < 2)
-      return fail("company", "Company is required.");
-
-    const email = (form.email?.value || "").trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
-      return fail("email", "Enter a valid email address.");
-
-    const phone = (form.phone?.value || "").trim();
-    if (!/^\+?\d[\d\s\-()]{6,}$/.test(phone))
-      return fail("phone", "Enter a valid phone number.");
-
-    if (!form.country?.value)
-      return fail("country", "Please select a country.");
-
-    return true;
-  }
-// Prevent double-binding if script is included twice
-if (form.dataset.boundSubmit === "1") return;
-form.dataset.boundSubmit = "1";
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  if (submitting) return;
-
-  if (!validate()) {
-    resetSubmitState();
+  if (
+    !submitBtn ||
+    !countrySelect ||
+    !phoneInput ||
+    !emailInput ||
+    !verifyEmailBtn ||
+    !otpInput ||
+    !otpActions ||
+    !otpTimer ||
+    !verifyOtpBtn ||
+    !resendOtpBtn ||
+    !verifiedBadge ||
+    !verificationToken
+  ) {
     return;
   }
 
-  submitting = true;
-  setLoading(true);
 
-  // Safety timeout so button never stays loading forever
-  const safetyTimer = setTimeout(() => {
-    if (submitting) {
-      showToast("Taking too long. Please try again.", "error");
-      resetSubmitState();
+  // ==========================================================
+  // OTP URLS
+  // ==========================================================
+
+  /*
+    IMPORTANT:
+    demoform.js is a static JS file.
+
+    Therefore do NOT write:
+
+    {% url 'cmmsApp:send_email_otp' %}
+
+    inside this file.
+  */
+
+  const SEND_OTP_URL =
+    "/api/contact/send-email-otp/";
+
+  const VERIFY_OTP_URL =
+    "/api/contact/verify-email-otp/";
+
+
+  const OTP_EXPIRY_SECONDS = 180;
+  const RESEND_SECONDS = 60;
+
+
+  let emailVerified = false;
+  let emailUsedForOtp = "";
+
+  let remainingSeconds = 0;
+  let resendRemaining = 0;
+
+  let expiryInterval = null;
+  let resendInterval = null;
+
+  let submitting = false;
+
+
+  // ==========================================================
+  // TOAST
+  // ==========================================================
+
+  function showToast(
+    msg,
+    type = "error",
+    timeoutMs = 4000
+  ) {
+
+    /*
+      CHANGE BY JYOTI:
+      Toast does NOT scroll the page.
+    */
+
+    const root =
+      document.getElementById("cmmsToastRoot") ||
+      document.getElementById("transformerToastRoot");
+
+
+    if (!root) {
+
+      alert(msg);
+
+      return;
     }
-  }, 15000);
 
-  try {
-    const res = await fetch(form.action, {
-      method: "POST",
-      body: new FormData(form),
-      headers: { "X-Requested-With": "XMLHttpRequest" },
-      credentials: "same-origin",
-      redirect: "follow",
-    });
 
-    // If backend sends a redirect (302 -> thank you page), fetch will follow it
-    // and we will get HTML. In that case just navigate to res.url
-    const ct = (res.headers.get("content-type") || "").toLowerCase();
+    const el =
+      document.createElement("div");
 
-    // Case 1: JSON response (your desired AJAX format)
-    if (ct.includes("application/json")) {
-      const data = await res.json().catch(() => ({}));
 
-      if (!res.ok || !data.ok) {
-        const errors = data.errors || {};
-        Object.keys(errors).forEach((k) => err(k, errors[k]));
-        showToast("Please fix the errors and try again.", "error");
+    el.className =
+      "transformer-toast " +
+      (
+        type === "ok"
+          ? "transformer-toast--ok"
+          : "transformer-toast--error"
+      );
+
+
+    el.innerHTML = `
+      <span aria-hidden="true">
+        ${type === "ok" ? "✔️" : "⚠️"}
+      </span>
+
+      <div>${msg}</div>
+
+      <button
+        class="transformer-toast__close"
+        type="button"
+        aria-label="Close"
+      >
+        ×
+      </button>
+    `;
+
+
+    root.appendChild(el);
+
+
+    const remove = () => {
+
+      el.remove();
+
+    };
+
+
+    const closeBtn =
+      el.querySelector(
+        ".transformer-toast__close"
+      );
+
+
+    if (closeBtn) {
+
+      closeBtn.addEventListener(
+        "click",
+        remove
+      );
+
+    }
+
+
+    setTimeout(
+      remove,
+      timeoutMs
+    );
+  }
+
+
+  // ==========================================================
+  // CSRF TOKEN
+  // ==========================================================
+
+  function getCsrfToken() {
+
+    const token =
+      form.querySelector(
+        'input[name="csrfmiddlewaretoken"]'
+      );
+
+
+    return token
+      ? token.value
+      : "";
+  }
+
+
+  // ==========================================================
+  // EMAIL VALIDATION
+  // ==========================================================
+
+  function validEmail(email) {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(
+      email
+    );
+  }
+
+
+  // ==========================================================
+  // TIMER FORMAT
+  // ==========================================================
+
+  function formatTime(seconds) {
+
+    const minutes =
+      Math.floor(
+        seconds / 60
+      );
+
+
+    const secs =
+      seconds % 60;
+
+
+    return (
+      String(minutes).padStart(2, "0")
+      +
+      ":"
+      +
+      String(secs).padStart(2, "0")
+    );
+  }
+
+
+  // ==========================================================
+  // STOP TIMERS
+  // ==========================================================
+
+  function stopExpiryTimer() {
+
+    if (expiryInterval) {
+
+      clearInterval(
+        expiryInterval
+      );
+
+      expiryInterval = null;
+    }
+  }
+
+
+  function stopResendTimer() {
+
+    if (resendInterval) {
+
+      clearInterval(
+        resendInterval
+      );
+
+      resendInterval = null;
+    }
+  }
+
+
+  // ==========================================================
+  // SUBMIT BUTTON
+  // ==========================================================
+
+  function updateSubmitAvailability() {
+
+    if (submitting) {
+
+      submitBtn.disabled = true;
+
+      return;
+    }
+
+
+    /*
+      CHANGE BY JYOTI:
+      Submit is enabled ONLY after successful OTP verification.
+    */
+
+    submitBtn.disabled =
+      !(
+        emailVerified &&
+        verificationToken.value
+      );
+  }
+
+
+  // ==========================================================
+  // VERIFY EMAIL LINK
+  // ==========================================================
+
+  function updateVerifyEmailButton() {
+
+    const email =
+      emailInput.value.trim();
+
+
+    if (
+      !emailVerified &&
+      !emailUsedForOtp &&
+      validEmail(email)
+    ) {
+
+      verifyEmailBtn.style.display =
+        "inline-block";
+
+    } else {
+
+      verifyEmailBtn.style.display =
+        "none";
+    }
+  }
+
+
+  // ==========================================================
+  // RESET OTP VERIFICATION
+  // ==========================================================
+
+  function resetEmailVerification() {
+
+    emailVerified = false;
+
+    emailUsedForOtp = "";
+
+    verificationToken.value = "";
+
+
+    stopExpiryTimer();
+    stopResendTimer();
+
+
+    verifiedBadge.style.display =
+      "none";
+
+
+    otpInput.value = "";
+
+    otpInput.style.display =
+      "none";
+
+
+    otpActions.style.display =
+      "none";
+
+
+    resendOtpBtn.style.display =
+      "none";
+
+    resendOtpBtn.disabled =
+      false;
+
+    resendOtpBtn.textContent =
+      "Resend";
+
+
+    emailInput.style.display =
+      "block";
+
+    emailInput.readOnly =
+      false;
+
+
+    if (otpMessage) {
+
+      otpMessage.textContent = "";
+
+      otpMessage.style.display =
+        "none";
+    }
+
+
+    updateVerifyEmailButton();
+
+    updateSubmitAvailability();
+  }
+
+
+  // ==========================================================
+  // OTP EXPIRY TIMER
+  // ==========================================================
+
+  function startExpiryTimer(expiresIn) {
+
+    stopExpiryTimer();
+
+
+    remainingSeconds =
+      Number(expiresIn)
+      ||
+      OTP_EXPIRY_SECONDS;
+
+
+    otpTimer.textContent =
+      formatTime(
+        remainingSeconds
+      );
+
+
+    verifyOtpBtn.disabled =
+      false;
+
+
+    expiryInterval =
+      setInterval(
+        function () {
+
+          remainingSeconds -= 1;
+
+
+          otpTimer.textContent =
+            formatTime(
+              Math.max(
+                remainingSeconds,
+                0
+              )
+            );
+
+
+          if (
+            remainingSeconds <= 0
+          ) {
+
+            stopExpiryTimer();
+
+
+            verifyOtpBtn.disabled =
+              true;
+
+
+            showToast(
+              "OTP expired. Please request a new OTP.",
+              "error"
+            );
+          }
+
+        },
+        1000
+      );
+  }
+
+
+  // ==========================================================
+  // RESEND TIMER
+  // ==========================================================
+
+  function startResendTimer() {
+
+    stopResendTimer();
+
+
+    resendRemaining =
+      RESEND_SECONDS;
+
+
+    resendOtpBtn.style.display =
+      "inline-block";
+
+
+    resendOtpBtn.disabled =
+      true;
+
+
+    resendOtpBtn.textContent =
+      `Resend OTP (${resendRemaining}s)`;
+
+
+    resendInterval =
+      setInterval(
+        function () {
+
+          resendRemaining -= 1;
+
+
+          if (
+            resendRemaining <= 0
+          ) {
+
+            stopResendTimer();
+
+
+            resendOtpBtn.disabled =
+              false;
+
+
+            resendOtpBtn.textContent =
+              "Resend OTP";
+
+
+            return;
+          }
+
+
+          resendOtpBtn.textContent =
+            `Resend OTP (${resendRemaining}s)`;
+
+        },
+        1000
+      );
+  }
+
+
+  // ==========================================================
+  // CHANGE BY JYOTI
+  // SEND EMAIL OTP
+  // ==========================================================
+
+  async function sendEmailOtp() {
+
+    const email =
+      emailInput.value
+        .trim()
+        .toLowerCase();
+
+
+    if (!email) {
+
+      showToast(
+        "Please enter your email address.",
+        "error"
+      );
+
+
+      emailInput.focus({
+        preventScroll: true
+      });
+
+
+      return;
+    }
+
+
+    if (!validEmail(email)) {
+
+      showToast(
+        "Please enter a valid email address.",
+        "error"
+      );
+
+
+      emailInput.focus({
+        preventScroll: true
+      });
+
+
+      return;
+    }
+
+
+    verifyEmailBtn.disabled =
+      true;
+
+
+    resendOtpBtn.disabled =
+      true;
+
+
+    const oldText =
+      verifyEmailBtn.textContent;
+
+
+    verifyEmailBtn.textContent =
+      "Sending...";
+
+
+    const body =
+      new FormData();
+
+
+    body.append(
+      "email",
+      email
+    );
+
+
+    try {
+
+      const response =
+        await fetch(
+          SEND_OTP_URL,
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "X-CSRFToken":
+                getCsrfToken(),
+
+              "X-Requested-With":
+                "XMLHttpRequest"
+            },
+
+            credentials:
+              "same-origin",
+
+            body: body
+          }
+        );
+
+
+      let data = {};
+
+
+      try {
+
+        data =
+          await response.json();
+
+      } catch (e) {
+
+        throw new Error(
+          "Invalid response from server."
+        );
+      }
+
+
+      if (
+        !response.ok ||
+        !data.ok
+      ) {
+
+        throw new Error(
+          data.message
+          ||
+          "Unable to send OTP."
+        );
+      }
+
+
+      emailUsedForOtp =
+        email;
+
+
+      /*
+        Hide email and show OTP
+        in the same position.
+      */
+
+      emailInput.style.display =
+        "none";
+
+
+      verifyEmailBtn.style.display =
+        "none";
+
+
+      otpInput.style.display =
+        "block";
+
+
+      otpActions.style.display =
+        "flex";
+
+
+      otpInput.value =
+        "";
+
+
+      otpInput.focus({
+        preventScroll: true
+      });
+
+
+      startExpiryTimer(
+        data.expires_in
+        ||
+        OTP_EXPIRY_SECONDS
+      );
+
+
+      startResendTimer();
+
+
+      showToast(
+        "OTP sent successfully. Please check your email.",
+        "ok"
+      );
+
+
+    } catch (error) {
+
+
+      updateVerifyEmailButton();
+
+
+      showToast(
+        error.message
+        ||
+        "Unable to send OTP.",
+        "error"
+      );
+
+
+    } finally {
+
+
+      verifyEmailBtn.disabled =
+        false;
+
+
+      verifyEmailBtn.textContent =
+        oldText
+        ||
+        "Verify email";
+
+
+      if (!resendInterval) {
+
+        resendOtpBtn.disabled =
+          false;
+      }
+
+    }
+  }
+
+
+  // ==========================================================
+  // CHANGE BY JYOTI
+  // VERIFY EMAIL OTP
+  // ==========================================================
+
+  async function verifyEmailOtp() {
+
+    const email =
+      emailInput.value
+        .trim()
+        .toLowerCase();
+
+
+    const otp =
+      otpInput.value.trim();
+
+
+    if (
+      email !== emailUsedForOtp
+    ) {
+
+      resetEmailVerification();
+
+
+      showToast(
+        "Email address changed. Please request a new OTP.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    if (
+      remainingSeconds <= 0
+    ) {
+
+      showToast(
+        "OTP expired. Please request a new OTP.",
+        "error"
+      );
+
+
+      return;
+    }
+
+
+    if (
+      !/^\d{6}$/.test(otp)
+    ) {
+
+      showToast(
+        "Please enter the 6-digit OTP.",
+        "error"
+      );
+
+
+      otpInput.focus({
+        preventScroll: true
+      });
+
+
+      return;
+    }
+
+
+    verifyOtpBtn.disabled =
+      true;
+
+
+    verifyOtpBtn.textContent =
+      "Verifying...";
+
+
+    const body =
+      new FormData();
+
+
+    body.append(
+      "email",
+      email
+    );
+
+
+    body.append(
+      "otp",
+      otp
+    );
+
+
+    try {
+
+
+      const response =
+        await fetch(
+          VERIFY_OTP_URL,
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "X-CSRFToken":
+                getCsrfToken(),
+
+              "X-Requested-With":
+                "XMLHttpRequest"
+            },
+
+            credentials:
+              "same-origin",
+
+            body: body
+          }
+        );
+
+
+      let data = {};
+
+
+      try {
+
+        data =
+          await response.json();
+
+      } catch (e) {
+
+        throw new Error(
+          "Invalid response from server."
+        );
+      }
+
+
+      if (
+        !response.ok ||
+        !data.ok ||
+        !data.verified ||
+        !data.verification_token
+      ) {
+
+        throw new Error(
+          data.message
+          ||
+          "OTP verification failed."
+        );
+      }
+
+
+      emailVerified =
+        true;
+
+
+      verificationToken.value =
+        data.verification_token;
+
+
+      stopExpiryTimer();
+
+      stopResendTimer();
+
+
+      otpInput.style.display =
+        "none";
+
+
+      otpActions.style.display =
+        "none";
+
+
+      emailInput.style.display =
+        "block";
+
+
+      emailInput.readOnly =
+        true;
+
+
+      verifyEmailBtn.style.display =
+        "none";
+
+
+      verifiedBadge.style.display =
+        "inline-block";
+
+
+      /*
+        CHANGE BY JYOTI:
+        Enable Submit after OTP verification.
+      */
+
+      updateSubmitAvailability();
+
+
+      showToast(
+        "Email verified successfully.",
+        "ok",
+        5000
+      );
+
+
+    } catch (error) {
+
+
+      showToast(
+        error.message
+        ||
+        "OTP verification failed.",
+        "error"
+      );
+
+
+      otpInput.focus({
+        preventScroll: true
+      });
+
+
+      otpInput.select();
+
+
+    } finally {
+
+
+      if (
+        !emailVerified &&
+        remainingSeconds > 0
+      ) {
+
+        verifyOtpBtn.disabled =
+          false;
+      }
+
+
+      verifyOtpBtn.textContent =
+        "Verify OTP";
+
+    }
+  }
+
+
+  // ==========================================================
+  // LOADING
+  // ==========================================================
+
+  function setLoading(isLoading) {
+
+    if (isLoading) {
+
+      submitBtn.classList.add(
+        "is-loading"
+      );
+
+
+      submitBtn.disabled =
+        true;
+
+
+    } else {
+
+
+      submitBtn.classList.remove(
+        "is-loading"
+      );
+
+
+      /*
+        CHANGE BY JYOTI:
+        Do not automatically enable Submit.
+      */
+
+      updateSubmitAvailability();
+    }
+  }
+
+
+  function resetSubmitState() {
+
+    submitting = false;
+
+    setLoading(false);
+  }
+
+
+  // ==========================================================
+  // MODAL OPEN / CLOSE
+  // ==========================================================
+
+  const open = (e) => {
+
+    if (e) {
+
+      e.preventDefault();
+    }
+
+
+    modal.classList.add(
+      "is-open"
+    );
+
+
+    resetSubmitState();
+
+    updateVerifyEmailButton();
+  };
+
+
+  const close = (e) => {
+
+    if (e) {
+
+      e.preventDefault();
+    }
+
+
+    modal.classList.remove(
+      "is-open"
+    );
+
+
+    resetSubmitState();
+  };
+
+
+  openers.forEach(
+    el => {
+
+      el.addEventListener(
+        "click",
+        open
+      );
+
+    }
+  );
+
+
+  closers.forEach(
+    el => {
+
+      el.addEventListener(
+        "click",
+        close
+      );
+
+    }
+  );
+
+
+  document.addEventListener(
+    "keydown",
+    function (e) {
+
+      if (
+        e.key === "Escape"
+      ) {
+
+        close(e);
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // FORM ERRORS
+  // ==========================================================
+
+  const err = (
+    name,
+    msg = ""
+  ) => {
+
+    const el =
+      document.querySelector(
+        `[data-error-for="${name}"]`
+      );
+
+
+    if (el) {
+
+      el.textContent =
+        msg;
+    }
+  };
+
+
+  const clearErr = () => {
+
+
+    form
+      .querySelectorAll(".error")
+      .forEach(
+        function (e) {
+
+          e.textContent =
+            "";
+        }
+      );
+
+
+    form
+      .querySelectorAll(".is-error")
+      .forEach(
+        function (el) {
+
+          el.classList.remove(
+            "is-error"
+          );
+        }
+      );
+
+
+    form
+      .querySelectorAll(
+        "[aria-invalid='true']"
+      )
+      .forEach(
+        function (el) {
+
+          el.removeAttribute(
+            "aria-invalid"
+          );
+        }
+      );
+  };
+
+
+  // ==========================================================
+  // COUNTRY / PHONE
+  // ==========================================================
+
+  const normalizeDial = (s) =>
+    (s || "").replace(
+      /[^0-9+]/g,
+      ""
+    );
+
+
+  let COUNTRY_OPT_CACHE = [];
+
+
+  function rebuildCountryCache() {
+
+    COUNTRY_OPT_CACHE =
+      Array.from(
+        countrySelect.options
+      )
+        .slice(1)
+        .map(
+          function (o) {
+
+            const [code, dial] =
+              (o.value || "")
+                .split("|");
+
+
+            return {
+
+              value:
+                o.value,
+
+              code:
+                code,
+
+              dial:
+                dial,
+
+              nDial:
+                normalizeDial(
+                  dial || ""
+                )
+            };
+          }
+        );
+  }
+
+
+  function findOptionByPhone(val) {
+
+    const p =
+      normalizeDial(
+        (val || "").trim()
+      );
+
+
+    if (
+      !p.startsWith("+")
+    ) {
+
+      return null;
+    }
+
+
+    let best =
+      null;
+
+
+    for (
+      const opt of COUNTRY_OPT_CACHE
+    ) {
+
+
+      if (
+        opt.nDial &&
+        p.startsWith(
+          opt.nDial
+        )
+      ) {
+
+
+        if (
+          !best ||
+          opt.nDial.length >
+          best.nDial.length
+        ) {
+
+          best =
+            opt;
+        }
+      }
+    }
+
+
+    return best;
+  }
+
+
+  function setPhoneDial(dial) {
+
+    if (!dial) return;
+
+
+    const rest =
+      (phoneInput.value || "")
+        .replace(
+          /^\+\s*[\d\-\s()]+/,
+          ""
+        )
+        .trim();
+
+
+    phoneInput.value =
+      `${dial}${rest ? " " + rest : ""}`;
+  }
+
+
+  // ==========================================================
+  // BUILD COUNTRY LIST
+  // ==========================================================
+
+  if (
+    countrySelect.options.length <= 1
+  ) {
+
+
+    const frag =
+      document.createDocumentFragment();
+
+
+    const def =
+      document.createElement(
+        "option"
+      );
+
+
+    def.value =
+      "";
+
+
+    def.textContent =
+      "-- Select Country --";
+
+
+    frag.appendChild(
+      def
+    );
+
+
+    COUNTRIES.forEach(
+      function (c) {
+
+
+        const o =
+          document.createElement(
+            "option"
+          );
+
+
+        o.value =
+          `${c.code}|${c.dial}`;
+
+
+        o.textContent =
+          `${c.name} (${c.dial})`;
+
+
+        frag.appendChild(
+          o
+        );
+      }
+    );
+
+
+    countrySelect.appendChild(
+      frag
+    );
+  }
+
+
+  rebuildCountryCache();
+
+
+  // ==========================================================
+  // PHONE -> COUNTRY
+  // ==========================================================
+
+  phoneInput.addEventListener(
+    "input",
+    function () {
+
+
+      const match =
+        findOptionByPhone(
+          phoneInput.value
+        );
+
+
+      if (match) {
+
+        countrySelect.value =
+          match.value;
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // COUNTRY -> PHONE
+  // ==========================================================
+
+  countrySelect.addEventListener(
+    "change",
+    function () {
+
+
+      const [, dial] =
+        (countrySelect.value || "")
+          .split("|");
+
+
+      if (!dial) {
+
+
+        phoneInput.placeholder =
+          "+61 4xx xxx xxx";
+
+
         return;
       }
 
-      // Success: close modal, reset, then go to thanks
-      form.reset();
-      clearErr();
-      modal.classList.remove("is-open");
 
-      const redirectUrl =
-        data.redirect ||
-        form.querySelector('input[name="next"]')?.value ||
-        "/thanks/";
+      phoneInput.placeholder =
+        `${dial} ...`;
 
-      // Use assign so it creates history entry (so you can go back to previous page)
-      window.location.assign(redirectUrl);
-      return;
+
+      const current =
+        normalizeDial(
+          phoneInput.value
+        );
+
+
+      if (
+        !current.startsWith(
+          normalizeDial(dial)
+        )
+      ) {
+
+
+        setPhoneDial(
+          dial
+        );
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // CHANGE BY JYOTI
+  // EMAIL EVENT
+  // ==========================================================
+
+  emailInput.addEventListener(
+    "input",
+    function () {
+
+
+      if (
+        emailVerified ||
+        emailUsedForOtp
+      ) {
+
+
+        resetEmailVerification();
+      }
+
+
+      updateVerifyEmailButton();
+
+    }
+  );
+
+
+  emailInput.addEventListener(
+    "blur",
+    updateVerifyEmailButton
+  );
+
+
+  verifyEmailBtn.addEventListener(
+    "click",
+    sendEmailOtp
+  );
+
+
+  verifyOtpBtn.addEventListener(
+    "click",
+    verifyEmailOtp
+  );
+
+
+  resendOtpBtn.addEventListener(
+    "click",
+    function () {
+
+
+      if (
+        !emailVerified &&
+        !resendOtpBtn.disabled
+      ) {
+
+
+        sendEmailOtp();
+      }
+
+    }
+  );
+
+
+  otpInput.addEventListener(
+    "input",
+    function () {
+
+
+      this.value =
+        this.value
+          .replace(/\D/g, "")
+          .slice(0, 6);
+
+    }
+  );
+
+
+  otpInput.addEventListener(
+    "keydown",
+    function (e) {
+
+
+      if (
+        e.key === "Enter"
+      ) {
+
+
+        e.preventDefault();
+
+
+        verifyEmailOtp();
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // VALIDATION
+  // ==========================================================
+
+  function validate() {
+
+    clearErr();
+
+
+    const fail = (
+      name,
+      msg
+    ) => {
+
+
+      err(
+        name,
+        msg
+      );
+
+
+      showToast(
+        msg,
+        "error"
+      );
+
+
+      const input =
+        form.querySelector(
+          `[name="${name}"]`
+        );
+
+
+      if (input) {
+
+
+        input.classList.add(
+          "is-error"
+        );
+
+
+        input.setAttribute(
+          "aria-invalid",
+          "true"
+        );
+
+
+        /*
+          Existing behavior:
+          Scroll only to invalid FORM field.
+
+          Toast itself does not scroll.
+        */
+
+        input.scrollIntoView({
+          block:
+            "center",
+
+          behavior:
+            "smooth"
+        });
+
+
+        setTimeout(
+          function () {
+
+
+            input.focus({
+              preventScroll:
+                true
+            });
+
+          },
+          250
+        );
+      }
+
+
+      return false;
+    };
+
+
+    const fullName =
+      (
+        form.full_name?.value
+        ||
+        ""
+      ).trim();
+
+
+    if (
+      !/^[A-Za-z\s'.-]{2,}$/.test(
+        fullName
+      )
+    ) {
+
+
+      return fail(
+        "full_name",
+        "Please enter a valid full name (letters only)."
+      );
     }
 
-    // Case 2: HTML response (usually because Django returned a normal redirect page)
-    // If res.ok and we got HTML, navigate to the final URL (likely thank-you page)
-    if (res.ok) {
-      form.reset();
-      clearErr();
-      modal.classList.remove("is-open");
-      window.location.assign(res.url);
-      return;
+
+    const company =
+      (
+        form.company?.value
+        ||
+        ""
+      ).trim();
+
+
+    if (
+      company.length < 2
+    ) {
+
+
+      return fail(
+        "company",
+        "Company is required."
+      );
     }
 
-    // Otherwise error
-    showToast("Server error. Please try again.", "error");
 
-  } catch (ex) {
-    showToast("Network error. Please try again.", "error");
-  } finally {
-    clearTimeout(safetyTimer);
-    resetSubmitState(); // ALWAYS stop spinner
+    const email =
+      (
+        form.email?.value
+        ||
+        ""
+      ).trim();
+
+
+    if (
+      !validEmail(email)
+    ) {
+
+
+      return fail(
+        "email",
+        "Enter a valid email address."
+      );
+    }
+
+
+    /*
+      CHANGE BY JYOTI:
+      Require OTP verification.
+    */
+
+    if (
+      !emailVerified ||
+      !verificationToken.value
+    ) {
+
+
+      return fail(
+        "email",
+        "Please verify your email address."
+      );
+    }
+
+
+    const phone =
+      (
+        form.phone?.value
+        ||
+        ""
+      ).trim();
+
+
+    if (
+      !/^\+?\d[\d\s\-()]{6,}$/.test(
+        phone
+      )
+    ) {
+
+
+      return fail(
+        "phone",
+        "Enter a valid phone number."
+      );
+    }
+
+
+    if (
+      !form.country?.value
+    ) {
+
+
+      return fail(
+        "country",
+        "Please select a country."
+      );
+    }
+
+
+    return true;
   }
-});
 
-// Reset when user returns (back button / bfcache)
-window.addEventListener("pageshow", () => {
-  // remove loading state always
-  resetSubmitState();
-  // also reset form so it is fresh when user returns from thanks page
-  form.reset();
-  clearErr();
-});
+
+  // ==========================================================
+  // PREVENT DOUBLE BINDING
+  // ==========================================================
+
+  if (
+    form.dataset.boundSubmit === "1"
+  ) {
+
+    return;
+  }
+
+
+  form.dataset.boundSubmit =
+    "1";
+
+
+  // ==========================================================
+  // SUBMIT FORM
+  // ==========================================================
+
+  form.addEventListener(
+    "submit",
+    async function (e) {
+
+
+      e.preventDefault();
+
+
+      if (submitting) {
+
+        return;
+      }
+
+
+      /*
+        CHANGE BY JYOTI:
+        First ensure email OTP is verified.
+      */
+
+      if (
+        !emailVerified ||
+        !verificationToken.value
+      ) {
+
+
+        showToast(
+          "Please verify your email address before submitting the enquiry.",
+          "error"
+        );
+
+
+        err(
+          "email",
+          "Please verify your email address."
+        );
+
+
+        return;
+      }
+
+
+      if (!validate()) {
+
+
+        resetSubmitState();
+
+
+        return;
+      }
+
+
+      submitting =
+        true;
+
+
+      setLoading(
+        true
+      );
+
+
+      const safetyTimer =
+        setTimeout(
+          function () {
+
+
+            if (submitting) {
+
+
+              showToast(
+                "Taking too long. Please try again.",
+                "error"
+              );
+
+
+              resetSubmitState();
+            }
+
+          },
+          15000
+        );
+
+
+      try {
+
+
+        const res =
+          await fetch(
+            form.action,
+            {
+
+              method:
+                "POST",
+
+              body:
+                new FormData(form),
+
+              headers: {
+
+                "X-Requested-With":
+                  "XMLHttpRequest"
+              },
+
+              credentials:
+                "same-origin",
+
+              redirect:
+                "follow"
+            }
+          );
+
+
+        const contentType =
+          (
+            res.headers.get(
+              "content-type"
+            )
+            ||
+            ""
+          ).toLowerCase();
+
+
+        // ================================================
+        // JSON RESPONSE
+        // ================================================
+
+        if (
+          contentType.includes(
+            "application/json"
+          )
+        ) {
+
+
+          const data =
+            await res
+              .json()
+              .catch(
+                function () {
+
+                  return {};
+                }
+              );
+
+
+          if (
+            !res.ok ||
+            !data.ok
+          ) {
+
+
+            const errors =
+              data.errors
+              ||
+              {};
+
+
+            Object.keys(
+              errors
+            ).forEach(
+              function (key) {
+
+
+                err(
+                  key,
+                  errors[key]
+                );
+              }
+            );
+
+
+            showToast(
+              errors.email
+              ||
+              "Please fix the errors and try again.",
+              "error"
+            );
+
+
+            return;
+          }
+
+
+          form.reset();
+
+
+          clearErr();
+
+
+          emailVerified =
+            false;
+
+
+          emailUsedForOtp =
+            "";
+
+
+          verificationToken.value =
+            "";
+
+
+          stopExpiryTimer();
+
+          stopResendTimer();
+
+
+          modal.classList.remove(
+            "is-open"
+          );
+
+
+          const redirectUrl =
+            data.redirect
+            ||
+            form.querySelector(
+              'input[name="next"]'
+            )?.value
+            ||
+            "/thanks/";
+
+
+          window.location.assign(
+            redirectUrl
+          );
+
+
+          return;
+        }
+
+
+        // ================================================
+        // HTML / DJANGO REDIRECT RESPONSE
+        // ================================================
+
+        if (res.ok) {
+
+
+          form.reset();
+
+
+          clearErr();
+
+
+          emailVerified =
+            false;
+
+
+          emailUsedForOtp =
+            "";
+
+
+          verificationToken.value =
+            "";
+
+
+          stopExpiryTimer();
+
+          stopResendTimer();
+
+
+          modal.classList.remove(
+            "is-open"
+          );
+
+
+          window.location.assign(
+            res.url
+          );
+
+
+          return;
+        }
+
+
+        showToast(
+          "Server error. Please try again.",
+          "error"
+        );
+
+
+      } catch (error) {
+
+
+        showToast(
+          "Network error. Please try again.",
+          "error"
+        );
+
+
+      } finally {
+
+
+        clearTimeout(
+          safetyTimer
+        );
+
+
+        resetSubmitState();
+      }
+
+    }
+  );
+
+
+  // ==========================================================
+  // BROWSER BACK BUTTON
+  // ==========================================================
+
+  window.addEventListener(
+    "pageshow",
+    function () {
+
+
+      form.reset();
+
+
+      clearErr();
+
+
+      resetEmailVerification();
+
+
+      submitting =
+        false;
+
+
+      submitBtn.classList.remove(
+        "is-loading"
+      );
+
+
+      updateSubmitAvailability();
+
+    }
+  );
+
+
+  // ==========================================================
+  // INITIAL STATE
+  // ==========================================================
+
+  resetEmailVerification();
+
+  updateSubmitAvailability();
 
 })();
